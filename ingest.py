@@ -2,6 +2,7 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
@@ -9,18 +10,14 @@ load_dotenv()
 with open("data/drug1.txt", "r", encoding="utf-8") as file:
     text = file.read()
 
-# --- 2. Split into overlapping chunks (by characters, simple v1) ---
-def chunk_text(text, chunk_size=500, chunk_overlap=100):
-    """Splits the text into chunks with specified size and overlap."""
-    chunks = []
-    start = 0
-    while start < len(text):
-        end = min(start + chunk_size, len(text))
-        chunks.append(text[start:end])
-        start += chunk_size - chunk_overlap
-    return chunks
-
-chunks = chunk_text(text)
+# change comment below
+# --- 2. Split into overlapping chunks with RecursiveCharacterTextSplitter (by separators, v2) ---
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=100,
+    separators=["\n\n", "\n", ". ", " ", ""],
+)
+chunks = splitter.split_text(text)
 print(f"Split into {len(chunks)} chunks")
 
 # --- 3. Embed each chunk ---
