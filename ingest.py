@@ -29,8 +29,8 @@ conn = psycopg2.connect(
     host="localhost",
     port=5433,
     dbname="medical_rag",
-    user="postgres",
-    password="devpassword",
+    user=os.environ["DB_USER"],
+    password=os.environ["DB_PASSWORD"],
 )
 cur = conn.cursor()
 
