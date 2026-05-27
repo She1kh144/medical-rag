@@ -13,11 +13,11 @@ client = OpenAI(
     base_url="https://api.deepseek.com",
 )
 
-def retrieve(query, k=3):
-    query_embedding = embed_model.encode(query).tolist()
+def retrieve(query, k=10):
+    query_embedding = embed_model.encode(f"query: {query}").tolist()
     conn = psycopg2.connect(
         host="localhost", port=5433, dbname="medical_rag",
-        user="postgres", password="devpassword",
+        user=os.environ["DB_USER"], password=os.environ["DB_PASSWORD"],
     )
     cur = conn.cursor()
     cur.execute(
@@ -63,7 +63,7 @@ def generate_answer(query, chunks):
 
 # --- Run the full pipeline ---
 if __name__ == "__main__":
-    query = "Можно ли принимать парацетамол с алкоголем?"
+    query = "Какая дозировка парацетамола для взрослых?"
 
     chunks = retrieve(query)
     answer = generate_answer(query, chunks)

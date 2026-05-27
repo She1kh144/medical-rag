@@ -22,7 +22,8 @@ print(f"Split into {len(chunks)} chunks")
 
 # --- 3. Embed each chunk ---
 model = SentenceTransformer("intfloat/multilingual-e5-small")
-embeddings = model.encode(chunks)
+# We prepend "passage: " to each chunk to give the model a hint that these are passages to be used for retrieval
+embeddings = model.encode([f"passage: {chunk}" for chunk in chunks])
 print(f"Created {len(embeddings)} embeddings")
 
 conn = psycopg2.connect(
