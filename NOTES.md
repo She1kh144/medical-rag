@@ -18,6 +18,10 @@ seperators ("\n\n", "\n", etc.).
 The search.py retrieves 3 the most relevant chunks out of database with cosine similarity. Retrieving happens like this "embedding <=> %s::vector" in the query.
 The rag.py is the mix of the two previous files. Retrieval-Augmented-Generation
 
+-------------------------------- 28th may -------------------------------- 
+
+Same RAG pipeline, but it's running as an HTTP server with a documented, validated /ask endpoint, a health check, JSON in and JSON out, and the model loaded once at startup the way a real backend does it. Anyone — a frontend, another service, a curl command, an interviewer poking at /docs — can talk to the system now.
+
 ## PROJECT ORIENTATION (paste into a new chat to get up to speed)
 
 I'm building a Russian-language medical RAG system as a portfolio project to

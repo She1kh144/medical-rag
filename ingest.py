@@ -6,25 +6,20 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
-# --- 1. Load the document ---
-with open("data/drug1.txt", "r", encoding="utf-8") as file:
-    text = file.read()
+# --- Define the documents to ingest: (filepath, source_label) ---
+documents = [
+    ("data/drug1.txt", "paracetamol_rlsnet"),
+    ("data/drug2.txt", "ibuprofen_rlsnet"),
+    ("data/drug3.txt", "acetylsalicylic_acid_rlsnet"),
+]
 
-# change comment below
-# --- 2. Split into overlapping chunks with RecursiveCharacterTextSplitter (by separators, v2) ---
 splitter = RecursiveCharacterTextSplitter(
     chunk_size=500,
     chunk_overlap=100,
     separators=["\n\n", "\n", ". ", " ", ""],
 )
-chunks = splitter.split_text(text)
-print(f"Split into {len(chunks)} chunks")
 
-# --- 3. Embed each chunk ---
 model = SentenceTransformer("intfloat/multilingual-e5-small")
-# We prepend "passage: " to each chunk to give the model a hint that these are passages to be used for retrieval
-embeddings = model.encode([f"passage: {chunk}" for chunk in chunks])
-print(f"Created {len(embeddings)} embeddings")
 
 conn = psycopg2.connect(
     host="localhost",
@@ -35,13 +30,24 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
-for chunk, embedding in zip(chunks, embeddings):
-    cur.execute(
-        "INSERT INTO chunks (source, chunk_text, embedding) VALUES (%s, %s, %s)",
-        ("paracetamol_rlsnet", chunk, embedding.tolist()),
-    )
+total_chunks = 0
+for filepath, source_label in documents:
+    with open(filepath, "r", encoding="utf-8") as file:
+        text = file.read()
+
+    chunks = splitter.split_text(text)
+    embeddings = model.encode([f"context: {chunk}" for chunk in chunks])
+
+    for chunk, embedding in zip(chunks, embeddings):
+        cur.execute(
+            "INSERT INTO chunks (source, chunk_text, embedding) VALUES (%s, %s, %s)",
+            (source_label, chunk, embedding.tolist()),
+        )
+
+    print(f"Ingested {len(chunks)} chunks from {source_label}")
+    total_chunks += len(chunks)
 
 conn.commit()
 cur.close()
 conn.close()
-print("Done — chunks stored in database")
+print(f"Done — {total_chunks} total chunks stored")
