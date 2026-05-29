@@ -5,14 +5,14 @@ from sentence_transformers import SentenceTransformer
 
 load_dotenv()
 
-# The question we're asking the knowledge base
+# --- The question we're asking the knowledge base ---
 query = "Какая дозировка парацетамола для взрослых?"
 
-# --- 1. Embed the question (same model as ingestion) ---
+# --- Embed the question (same model as ingestion) ---
 model = SentenceTransformer("intfloat/multilingual-e5-small")
 query_embedding = model.encode(f"query: {query}").tolist()
 
-# --- 2. Find the nearest chunks in the database ---
+# --- Find the nearest chunks in the database ---
 conn = psycopg2.connect(
     host=os.environ.get("DB_HOST", "localhost"),
     port=int(os.environ.get("DB_PORT", "5433")),
@@ -36,7 +36,7 @@ results = cur.fetchall()
 cur.close()
 conn.close()
 
-# --- 3. Show what came back ---
+# --- Show what came back ---
 print(f"Question: {query}\n")
 for i, (chunk_text, distance) in enumerate(results, 1):
     print(f"--- Result {i} (distance: {distance:.4f}) ---")

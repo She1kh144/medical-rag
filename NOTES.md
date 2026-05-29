@@ -28,3 +28,7 @@ Eval v1: 100% retrieval top-3, 90% answer accuracy (9/10) on 10 Russian medical 
 
 Q7 deep-dive: correct GI contraindications chunk exists in corpus, ranks in positions 11-40 (verified surfaces at k=40). Likely cause: semantic crowding with other contraindication chunks. Production k=10 stays; reranker would be the natural fix. Documented as known limit, not patched.
 
+I containerized the whole project today. Wrote a dockerfile for the app, then a docker-compose.yml that runs the app and pgvector together with one command. Made ingest.py create the pgvector extension and chunks table on its own with IF NOT EXISTS, so the database sets itself up. Moved DB connection settings to env vars so the same code works locally and inside docker.
+Biggest things I actually learned: dockerfile layer order matters (put rarely-changing stuff before COPY . . or you re-download everything on every code change), "localhost" inside a container means the container itself not my machine, services find each other by name on the docker network, and pip pulls GPU torch by default which dragged in 5GB of CUDA I don't use until I switched to the CPU index.
+Hit two real snags. pip timed out downloading CUDA, fixed by using torch's CPU index. Then after compose-up the chunks table didn't exist in the new database because I'd created it manually in the old container, fixed by making ingest.py bootstrap the schema itself. Lesson: anything infrastructure should self-create from code.
+The whole stack runs with `docker compose up --build` + `docker compose exec app python ingest.py`.
