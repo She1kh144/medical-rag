@@ -1,0 +1,7 @@
+venv/
+.git/
+__pycache__/
+*.pyc
+.env
+.vscode/
+data/eval_results.json

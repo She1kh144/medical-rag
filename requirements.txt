@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+openai
+sentence-transformers
+psycopg2-binary
+langchain-text-splitters
+python-dotenv
+requests

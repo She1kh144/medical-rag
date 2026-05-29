@@ -22,13 +22,25 @@ splitter = RecursiveCharacterTextSplitter(
 model = SentenceTransformer("intfloat/multilingual-e5-small")
 
 conn = psycopg2.connect(
-    host="localhost",
-    port=5433,
-    dbname="medical_rag",
-    user=os.environ["DB_USER"],
-    password=os.environ["DB_PASSWORD"],
+    host=os.environ.get("DB_HOST", "localhost"),
+    port=int(os.environ.get("DB_PORT", "5433")),
+    dbname=os.environ.get("DB_NAME", "medical_rag"),
+    user=os.environ.get("DB_USER", "postgres"),
+    password=os.environ.get("DB_PASSWORD", "devpassword"),
 )
 cur = conn.cursor()
+
+# Create the chunks table with a vector column for embeddings if not exists
+cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS chunks (
+        id SERIAL PRIMARY KEY,
+        source TEXT NOT NULL,
+        chunk_text TEXT NOT NULL,
+        embedding vector(384)
+    );
+""")
+conn.commit()
 
 total_chunks = 0
 for filepath, source_label in documents:

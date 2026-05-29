@@ -14,8 +14,11 @@ query_embedding = model.encode(f"query: {query}").tolist()
 
 # --- 2. Find the nearest chunks in the database ---
 conn = psycopg2.connect(
-    host="localhost", port=5433, dbname="medical_rag",
-    user="postgres", password="devpassword",
+    host=os.environ.get("DB_HOST", "localhost"),
+    port=int(os.environ.get("DB_PORT", "5433")),
+    dbname=os.environ.get("DB_NAME", "medical_rag"),
+    user=os.environ.get("DB_USER", "postgres"),
+    password=os.environ.get("DB_PASSWORD", "devpassword"),
 )
 cur = conn.cursor()
 
