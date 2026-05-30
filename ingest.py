@@ -6,12 +6,12 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
-# --- Define the documents to ingest: (filepath, source_label) ---
-documents = [
-    ("data/drug1.txt", "paracetamol_rlsnet"),
-    ("data/drug2.txt", "ibuprofen_rlsnet"),
-    ("data/drug3.txt", "acetylsalicylic_acid_rlsnet"),
-]
+documents = []
+for filename in sorted(os.listdir("data/drugs")):
+    if filename.endswith(".txt"):
+        filepath = os.path.join("data/drugs", filename)
+        source_label = filename.replace(".txt", "") + "_rlsnet"
+        documents.append((filepath, source_label))
 
 splitter = RecursiveCharacterTextSplitter(
     chunk_size=500,

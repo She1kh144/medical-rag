@@ -2,7 +2,7 @@
 "Embedding dim is 384, column must match."
 "DeepSeek for generation because OpenAI is geoblocked in Russia."
 
-"I'm building a Russian medical RAG. Stack: DeepSeek generation, multilingual-e5-small embeddings (384-dim), pgvector in Docker on port 5433, FastAPI next. Working so far: ingest.py, search.py, rag.py — full pipeline runs. Here's where I'm stuck:"
+"I'm building a Russian medical RAG. Stack: DeepSeek generation, multilingual-e5-small embeddings (384-dim), pgvector in Docker on port 5433, FastAPI next. Working so far: ingest.py, search.py, rag.py — full pipeline runs."
 
 -------------------------------- 24th may -------------------------------- 
 
@@ -32,3 +32,9 @@ I containerized the whole project today. Wrote a dockerfile for the app, then a 
 Biggest things I actually learned: dockerfile layer order matters (put rarely-changing stuff before COPY . . or you re-download everything on every code change), "localhost" inside a container means the container itself not my machine, services find each other by name on the docker network, and pip pulls GPU torch by default which dragged in 5GB of CUDA I don't use until I switched to the CPU index.
 Hit two real snags. pip timed out downloading CUDA, fixed by using torch's CPU index. Then after compose-up the chunks table didn't exist in the new database because I'd created it manually in the old container, fixed by making ingest.py bootstrap the schema itself. Lesson: anything infrastructure should self-create from code.
 The whole stack runs with `docker compose up --build` + `docker compose exec app python ingest.py`.
+
+-------------------------------- 30th may -------------------------------- 
+Today I reorganized the structure of the project files and added 12 more drugs to the corpus. 
+Moreover, I created sources.md containing names of the drugs and links to them. Changed file names to their actual drug names. 
+Then modified ingest.py file to load all the txt files from data/drugs directory which contains all the drugs.
+And I'm super tired rn!!! But, it was worth it.

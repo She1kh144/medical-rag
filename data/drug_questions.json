@@ -1,52 +1,152 @@
 [
   {
-    "question": "Какая максимальная разовая доза парацетамола для взрослых?",
-    "expected_source": "paracetamol_rlsnet",
-    "expected_keywords": ["1 г", "2 таблетки по 500 мг", "максимальная разовая"]
-  },
-  {
-    "question": "С какого возраста можно принимать парацетамол в таблетках детям?",
-    "expected_source": "paracetamol_rlsnet",
-    "expected_keywords": ["3 лет", "дозировкой", "дети от 3 до 12 лет"]
-  },
-  {
-    "question": "При каких состояниях суточная доза парацетамола не должна превышать 3 г?",
-    "expected_source": "paracetamol_rlsnet",
-    "expected_keywords": ["заболевания печени", "печеноч", "хронический алкоголизм", "истощен", "обезвоживан"]
-  },
-  {
-    "question": "Что принимать при высокой температуре у ребенка 5 лет?",
-    "expected_source": ["paracetamol_rlsnet"],
-    "expected_keywords": ["парацетамол", "доза по массе тела", "15 мг/кг", "максимальная суточная 60 мг/кг"]
-  },
-  {
     "question": "Какая максимальная суточная доза ибупрофена для взрослых?",
-    "expected_source": "ibuprofen_rlsnet",
-    "expected_keywords": ["1200 мг", "6 таблеток", "максимальная суточная доза"]
+    "expected_source": "ibuprofen",
+    "expected_keywords": ["1200 мг", "6 таблеток"]
   },
   {
-    "question": "С какого возраста можно принимать таблетки ибупрофена 200 мг?",
-    "expected_source": "ibuprofen_rlsnet",
-    "expected_keywords": ["6 лет", "12 лет", "20 кг", "6 до 12 лет"]
+    "question": "С какого возраста можно принимать парацетамол в таблетках?",
+    "expected_source": "paracetamol",
+    "expected_keywords": ["3 лет", "дети от 3"]
   },
   {
-    "question": "При каких заболеваниях желудочно-кишечного тракта ибупрофен строго противопоказан?",
-    "expected_source": "ibuprofen_rlsnet",
-    "expected_keywords": ["эрозивно-язвен", "язвенная болезнь желудка", "болезнь Крона", "язвенный колит", "язвенное кровотечение"]
+    "question": "До какого возраста строго противопоказан аспирин?",
+    "expected_source": "acetylsalicylic_acid",
+    "expected_keywords": ["15 лет", "синдром рейе"]
   },
   {
-    "question": "До какого возраста строго противопоказан прием ацетилсалициловой кислоты?",
-    "expected_source": "acetylsalicylic_acid_rlsnet",
-    "expected_keywords": ["15 лет", "детский возраст до 15 лет", "синдром Рейе"]
+    "question": "Какая разовая доза кеторолака в таблетках?",
+    "expected_source": "ketorol",
+    "expected_keywords": ["10 мг", "максимальная суточная 40 мг"]
   },
   {
-    "question": "При дефиците какого фермента ацетилсалициловая кислота противопоказана?",
-    "expected_source": "acetylsalicylic_acid_rlsnet",
-    "expected_keywords": ["глюкозо-6-фосфатдегидрогеназы", "дефицит глюкозо-6-фосфатдегидрогеназы", "G6PD"]
+    "question": "С какого возраста можно принимать нимесулид?",
+    "expected_source": "nise",
+    "expected_keywords": ["12 лет", "подростков от 12"]
+  },
+  {
+    "question": "Какая дозировка амоксициллина для взрослых?",
+    "expected_source": "amoxicillin",
+    "expected_keywords": ["250-500 мг", "3 раза в сутки"]
+  },
+  {
+    "question": "Какой период полувыведения у дезлоратадина?",
+    "expected_source": "aerius",
+    "expected_keywords": ["27 ч", "20-30 ч"]
+  },
+  {
+    "question": "С какого возраста можно принимать лоратадин?",
+    "expected_source": "claritin",
+    "expected_keywords": ["3 лет", "масса тела более 30 кг"]
+  },
+  {
+    "question": "Какая разовая доза супрастина для взрослых?",
+    "expected_source": "suprastin",
+    "expected_keywords": ["25 мг", "3-4 раза в сутки"]
+  },
+  {
+    "question": "Какой период полувыведения у цетиризина?",
+    "expected_source": "zyrtec",
+    "expected_keywords": ["8-9 ч", "примерно 8"]
+  },
+  {
+    "question": "Что принимать от аллергии и крапивницы?",
+    "expected_source": ["aerius", "claritin", "suprastin", "zyrtec", "clemastine_eskom"],
+    "expected_keywords": ["антигистаминн", "аллергический ринит", "крапивница"]
   },
   {
     "question": "Что принимать от боли в суставах и мышцах у взрослого?",
-    "expected_source": ["ibuprofen_rlsnet", "paracetamol_rlsnet", "acetylsalicylic_acid_rlsnet"],
-    "expected_keywords": ["ибупрофен", "парацетамол", "ацетилсалициловая кислота", "НПВС", "противовоспалительное", "артралгия", "миалгия"]
+    "expected_source": ["ibuprofen", "paracetamol", "acetylsalicylic_acid", "ketorol", "nise"],
+    "expected_keywords": ["ибупрофен", "парацетамол", "аспирин", "кеторолак", "нимесулид", "боль в суставах"]
+  },
+  {
+    "question": "Какой антибиотик принимать при инфекциях дыхательных путей?",
+    "expected_source": ["amoxicillin", "amoksiklav", "ciprofloxacin", "doxycycline", "sumamed"],
+    "expected_keywords": ["амоксициллин", "амоксиклав", "ципрофлоксацин", "доксициклин", "азитромицин", "дыхательных путей"]
+  },
+  {
+    "question": "Что принимать от головной боли и температуры?",
+    "expected_source": ["paracetamol", "ibuprofen", "acetylsalicylic_acid", "nise", "ketorol"],
+    "expected_keywords": ["парацетамол", "ибупрофен", "аспирин", "нимесулид", "жаропонижающее", "головная боль"]
+  },
+  {
+    "question": "При каких заболеваниях ЖКТ противопоказан ибупрофен?",
+    "expected_source": "ibuprofen",
+    "expected_keywords": ["эрозивно-язвенные заболевания", "язвенная болезнь", "болезнь крона"]
+  },
+  {
+    "question": "У какого препарата период полувыведения около 27 часов?",
+    "expected_source": "aerius",
+    "expected_keywords": ["дезлоратадин", "27 ч"]
+  },
+  {
+    "question": "При дефиците какого фермента аспирин противопоказан?",
+    "expected_source": "acetylsalicylic_acid",
+    "expected_keywords": ["глюкозо-6-фосфатдегидрогеназы", "g6pd"]
+  },
+  {
+    "question": "Какой препарат противопоказан при инфекционном мононуклеозе?",
+    "expected_source": ["amoxicillin", "amoksiklav"],
+    "expected_keywords": ["инфекционный мононуклеоз", "амоксициллин"]
+  },
+  {
+    "question": "При каких состояниях суточная доза парацетамола ограничивается 3 г?",
+    "expected_source": "paracetamol",
+    "expected_keywords": ["хронические заболевания печени", "печёночная недостаточность", "хронический алкоголизм"]
+  },
+  {
+    "question": "Какая максимальная суточная доза амоксиклава для взрослых?",
+    "expected_source": "amoksiklav",
+    "expected_keywords": ["875+125 мг", "максимальная суточная"]
+  },
+  {
+    "question": "С какого возраста можно принимать ципрофлоксацин?",
+    "expected_source": "ciprofloxacin",
+    "expected_keywords": ["с 1 года", "педиатрическим пациентам"]
+  },
+  {
+    "question": "Какой антибиотик вызывает артропатию у неполовозрелых животных?",
+    "expected_source": "ciprofloxacin",
+    "expected_keywords": ["артропати", "неполовозрел", "хрящ"]
+  },
+  {
+    "question": "При каких заболеваниях противопоказан доксициклин до 8 лет?",
+    "expected_source": "doxycycline",
+    "expected_keywords": ["до 8 лет", "кальци", "нерастворим"]
+  },
+  {
+    "question": "Какая дозировка азитромицина для детей старше 12 лет?",
+    "expected_source": "sumamed",
+    "expected_keywords": ["500 мг", "1 раз в сутки", "3 дня"]
+  },
+  {
+    "question": "Что принимать от зуда и сыпи при аллергии?",
+    "expected_source": ["aerius", "claritin", "suprastin", "zyrtec", "clemastine_eskom"],
+    "expected_keywords": ["зуд", "сыпь", "крапивница", "антигистамин"]
+  },
+  {
+    "question": "Какой НПВС лучше при воспалении суставов?",
+    "expected_source": ["ibuprofen", "nise", "ketorol", "acetylsalicylic_acid"],
+    "expected_keywords": ["ибупрофен", "нимесулид", "кеторолак", "аспирин", "противовоспалительное"]
+  },
+  {
+    "question": "При каких состояниях противопоказан клемастин?",
+    "expected_source": "clemastine_eskom",
+    "expected_keywords": ["бронхиальная астма", "детский возраст до 1 года", "ингибиторы мао"]
+  },
+  {
+    "question": "Какая дозировка цетиризина для взрослых?",
+    "expected_source": "zyrtec",
+    "expected_keywords": ["5-10 мг", "1 раз в сутки", "максимальная 20 мг"]
+  },
+  {
+    "question": "Какая дозировка ибупрофена для собаки?",
+    "expected_source": [],
+    "expected_keywords": ["нет", "не указано", "не содержит"]
+  },
+  {
+    "question": "Что такое инсулин и как его применять?",
+    "expected_source": [],
+    "expected_keywords": ["нет", "не содержит", "не указано в контексте"]
   }
 ]
