@@ -95,6 +95,7 @@ The reranker traded another retrieval point for three answer points (it surfaced
 - **Eval set size.** 29 questions is enough to surface system properties but produces coarse percentages. Growing the set to 50-100 would tighten the numbers and exercise more cross-drug discrimination cases.
 - **Substring-based eval.** Stem matching handles Russian inflection but not deeper paraphrasing. An LLM-as-judge eval would be more robust at the cost of additional API calls.
 - **General-purpose generation model.** `deepseek-chat` is not medically tuned. Real medical use would require a domain-tuned model and clinical review.
+- **Retrieval is based on textual similarity; queries phrased in terms not used by the source document (e.g., asking by age when the source dosing is by weight) may fail to retrieve relevant chunks. Query rewriting via the LLM could mitigate this.**
 
 ## Running it
 
