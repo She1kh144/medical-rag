@@ -10,7 +10,13 @@ def normalize_expected_source(expected):
     return expected
 
 def normalize(s):
-    return s.lower().replace("ё", "е")
+    return (
+        s.lower()
+        .replace("ё", "е")
+        .replace("–", "-")  # en-dash
+        .replace("—", "-")  # em-dash
+        .replace("−", "-")  # minus sign
+    )
 
 def evaluate_one(item, top_n=3):
     response = requests.post(

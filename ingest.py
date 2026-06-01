@@ -6,23 +6,23 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
-# Drug filename -> Russian display name
+# Drug filename -> Russian display name and active ingredient(s)
 DRUG_NAMES = {
-    "paracetamol": "Парацетамол",
-    "ibuprofen": "Ибупрофен",
-    "acetylsalicylic_acid": "Ацетилсалициловая кислота",
-    "amoxicillin": "Амоксициллин",
-    "amoksiklav": "Амоксиклав",
-    "doxycycline": "Доксициклин",
-    "ciprofloxacin": "Ципрофлоксацин",
-    "sumamed": "Сумамед",
-    "nise": "Найз",
-    "ketorol": "Кеторол",
-    "suprastin": "Супрастин",
-    "clemastine": "Клемастин",
-    "claritin": "Кларитин",
-    "aerius": "Эриус",
-    "zyrtec": "Зиртек",
+    "paracetamol": ("Парацетамол", "парацетамол"),
+    "ibuprofen": ("Ибупрофен", "ибупрофен"),
+    "acetylsalicylic_acid": ("Ацетилсалициловая кислота", "ацетилсалициловая кислота"),
+    "amoxicillin": ("Амоксициллин", "амоксициллин"),
+    "amoksiklav": ("Амоксиклав", "амоксициллин + клавулановая кислота"),
+    "doxycycline": ("Доксициклин", "доксициклин"),
+    "ciprofloxacin": ("Ципрофлоксацин", "ципрофлоксацин"),
+    "sumamed": ("Сумамед", "азитромицин"),
+    "nise": ("Найз", "нимесулид"),
+    "ketorol": ("Кеторол", "кеторолак"),
+    "suprastin": ("Супрастин", "хлоропирамин"),
+    "clemastine": ("Клемастин", "клемастин"),
+    "claritin": ("Кларитин", "лоратадин"),
+    "aerius": ("Эриус", "дезлоратадин"),
+    "zyrtec": ("Зиртек", "цетиризин"),
 }
 
 # Section header normalization
@@ -127,7 +127,12 @@ for filepath, source_label in documents:
 
     # Derive drug display name from filename
     drug_key = os.path.basename(filepath).replace(".txt", "")
-    drug_name = DRUG_NAMES.get(drug_key, drug_key)
+    brand, active_ingredient = DRUG_NAMES.get(drug_key, (drug_key, drug_key))
+
+    if brand == active_ingredient:
+        name_prefix = brand
+    else:
+        name_prefix = f"{brand} ({active_ingredient})"
 
     # Parse into sections
     sections = parse_sections(text)
@@ -137,7 +142,7 @@ for filepath, source_label in documents:
     for section_name, section_body in sections:
         section_chunks = splitter.split_text(section_body)
         for chunk in section_chunks:
-            prefixed = f"[{drug_name} — {section_name}]\n{chunk}"
+            prefixed = f"[{name_prefix} — {section_name}]\n{chunk}"
             prefixed_chunks.append(prefixed)
 
     embeddings = model.encode([f"context: {chunk}" for chunk in prefixed_chunks])
