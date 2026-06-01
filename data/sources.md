@@ -10,11 +10,11 @@
 7) Zyrtec -> [text](https://www.rlsnet.ru/drugs/zirtek-1339)
 8) Aerius -> [text](https://www.rlsnet.ru/drugs/erius-16132)
 9) Suprastin -> [text](https://www.rlsnet.ru/drugs/suprastin-2893)
-10) Clemastine eskom -> [text](https://www.rlsnet.ru/drugs/klemastin-eskom-35637)
+10) Clemastine -> [text](https://www.rlsnet.ru/drugs/klemastin-eskom-35637)
 
 ## Antibiotics 
 11) Amoxicillin -> [text](https://www.rlsnet.ru/drugs/amoksicillin-203)
-12) Sumamed -> [text](https://www.rlsnet.ru/drugs/sumamed-2887)
-13) Ciprofloxacin -> [text](https://www.rlsnet.ru/drugs/ciprofloksacin-3442)
-14) Amoksiklav -> [text](https://www.rlsnet.ru/drugs/amoksiklav-200)
+12) Sumamed -> [text](https://www.rlsnet.ru/drugs/sumamed-forte-13442)
+13) Ciprofloxacin (trimmed) -> [text](https://www.rlsnet.ru/drugs/ciprofloksacin-3442)
+14) Amoksiklav (trimmed) -> [text](https://www.rlsnet.ru/drugs/amoksiklav-200)
 15) Doxycycline -> [text](https://www.rlsnet.ru/drugs/doksiciklin-1262)

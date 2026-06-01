@@ -23,6 +23,8 @@ services:
       DB_NAME: medical_rag
       DB_USER: postgres
       DB_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ${USERPROFILE}/.cache/huggingface:/root/.cache/huggingface
     ports:
       - "8000:8000"
     depends_on:

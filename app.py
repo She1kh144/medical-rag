@@ -4,14 +4,15 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer, CrossEncoder
 
 load_dotenv()
 
 # --- Load model and client ONCE at startup, not per request ---
 embed_model = SentenceTransformer("intfloat/multilingual-e5-small")
+_rerank_model = None  # Lazy-loaded when needed
 client = OpenAI(
-    api_key=os.environ["DEEPSEEK_API_KEY"],
+    api_key=os.environ.get("DEEPSEEK_API_KEY"),
     base_url="https://api.deepseek.com",
 )
 
@@ -20,12 +21,33 @@ app = FastAPI(title="Medical RAG")
 class Question(BaseModel):
     query: str
     k: int = 10
+    rerank: bool = False
 
 class Answer(BaseModel):
     answer: str
     sources: list[dict]
 
+
+def get_rerank_model():
+    """Lazy-load the reranker model only if needed."""
+    global _rerank_model
+    if _rerank_model is None:
+        _rerank_model = CrossEncoder("BAAI/bge-reranker-v2-m3")
+    return _rerank_model
+
+def rerank(query: str, chunks: list, top_k: int = 10):
+    """Rerank chunks by cross-encoder relevance to the query."""
+    rerank_model = get_rerank_model()
+    pairs = [[query, chunk_text] for chunk_text, _, _ in chunks]
+    scores = rerank_model.predict(pairs)
+    
+    # Pair each chunk with its new score and sort descending
+    scored = list(zip(chunks, scores))
+    scored.sort(key=lambda x: x[1], reverse=True)
+    return [chunk for chunk, _ in scored[:top_k]]
+
 def retrieve(query: str, k: int):
+    """Retrieve top-k relevant chunks from the database using vector similarity."""
     query_embedding = embed_model.encode(f"query: {query}").tolist()
     conn = psycopg2.connect(
         host=os.environ.get("DB_HOST", "localhost"),
@@ -50,6 +72,7 @@ def retrieve(query: str, k: int):
     return results
 
 def generate_answer(query: str, chunks):
+    """Generate an answer using the retrieved chunks as context."""
     context = "\n\n".join(
         f"[Источник: {source}]\n{text}"
         for text, source, distance in chunks
@@ -79,9 +102,18 @@ def health():
 @app.post("/ask", response_model=Answer)
 def ask(question: Question):
     try:
-        chunks = retrieve(question.query, question.k)
-        if not chunks:
+        # Bi-encoder retrieval with optional reranking step
+        candidates = retrieve(question.query, k=50 if question.rerank else question.k)
+        
+        if not candidates:
             raise HTTPException(status_code=404, detail="No chunks found")
+        
+        # Optional intermediate reranking before generation (if enabled)
+        if question.rerank:
+            chunks = rerank(question.query, candidates, top_k=10)
+        else:
+            chunks = candidates[:question.k]
+        
         answer_text = generate_answer(question.query, chunks)
         sources = [
             {"source": src, "distance": float(dist)}

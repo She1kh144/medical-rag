@@ -9,11 +9,14 @@ def normalize_expected_source(expected):
         return [expected]
     return expected
 
+def normalize(s):
+    return s.lower().replace("ё", "е")
+
 def evaluate_one(item, top_n=3):
     response = requests.post(
         API_URL,
-        json={"query": item["question"], "k": 10},
-        timeout=60,
+        json={"query": item["question"], "rerank": False, "k": 10},
+        #timeout=60,
     )
     response.raise_for_status()
     data = response.json()
@@ -24,13 +27,22 @@ def evaluate_one(item, top_n=3):
     # --- Retrieval check: is an expected source in the top N? ---
     expected_sources = set(normalize_expected_source(item["expected_source"]))
     top_sources = {s["source"] for s in sources[:top_n]}
-    retrieval_hit = bool(expected_sources & top_sources)
+    retrieval_hit = bool(expected_sources & top_sources) if expected_sources else True
 
-    # --- Answer check: does the answer contain any expected keyword? ---
+    # --- Answer check: keyword present and right source cited ---
     answer_lower = answer.lower()
-    answer_hit = any(
-        kw.lower() in answer_lower for kw in item["expected_keywords"]
+
+    # --- Keyword check (existing) ---
+    keyword_hit = any(
+        normalize(kw) in normalize(answer) for kw in item["expected_keywords"]
     )
+
+    # --- Source check: the expected source must appear in the answer text ---
+    source_in_answer = any(
+        src.lower() in answer_lower for src in expected_sources
+    ) if expected_sources else True
+
+    answer_hit = keyword_hit and source_in_answer
 
     return {
         "question": item["question"],
@@ -64,9 +76,9 @@ def main():
     print(f"{'='*50}")
 
     # --- Save detailed results for inspection ---
-    with open("data/eval_results.json", "w", encoding="utf-8") as file:
+    with open("data/eval_result.json", "w", encoding="utf-8") as file:
         json.dump(results, file, ensure_ascii=False, indent=2)
-    print("\nDetailed results saved to data/eval_results.json")
+    print("\nDetailed results saved to data/eval_result.json")
 
 if __name__ == "__main__":
     main()

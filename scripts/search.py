@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 load_dotenv()
 
 # --- The question we're asking the knowledge base ---
-query = "Какая дозировка парацетамола для взрослых?"
+query = "что такое ибупрофен и как он работает?"
 
 # --- Embed the question (same model as ingestion) ---
 model = SentenceTransformer("intfloat/multilingual-e5-small")
@@ -24,7 +24,7 @@ cur = conn.cursor()
 
 cur.execute(
     """
-    SELECT chunk_text, embedding <=> %s::vector AS distance
+    SELECT source, chunk_text, embedding <=> %s::vector AS distance
     FROM chunks
     ORDER BY distance
     LIMIT 3
@@ -38,7 +38,7 @@ conn.close()
 
 # --- Show what came back ---
 print(f"Question: {query}\n")
-for i, (chunk_text, distance) in enumerate(results, 1):
-    print(f"--- Result {i} (distance: {distance:.4f}) ---")
+for i, (source, chunk_text, distance) in enumerate(results, 1):
+    print(f"--- Result {i} (source: {source}, distance: {distance:.4f}) ---")
     print(chunk_text)
     print()
