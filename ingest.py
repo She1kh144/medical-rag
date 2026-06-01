@@ -6,6 +6,84 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
+# Drug filename -> Russian display name
+DRUG_NAMES = {
+    "paracetamol": "Парацетамол",
+    "ibuprofen": "Ибупрофен",
+    "acetylsalicylic_acid": "Ацетилсалициловая кислота",
+    "amoxicillin": "Амоксициллин",
+    "amoksiklav": "Амоксиклав",
+    "doxycycline": "Доксициклин",
+    "ciprofloxacin": "Ципрофлоксацин",
+    "sumamed": "Сумамед",
+    "nise": "Найз",
+    "ketorol": "Кеторол",
+    "suprastin": "Супрастин",
+    "clemastine": "Клемастин",
+    "claritin": "Кларитин",
+    "aerius": "Эриус",
+    "zyrtec": "Зиртек",
+}
+
+# Section header normalization
+SECTION_MAP = {
+    "Действующее вещество": "Состав",
+    "Состав": "Состав",
+    "Состав на одну таблетку": "Состав",
+    "Описание лекарственной формы": "Описание лекарственной формы",
+    "Фармакокинетика": "Фармакокинетика",
+    "Фармакодинамика": "Фармакодинамика",
+    "Фармакологическое действие": "Фармакодинамика",
+    "Механизм действия": "Фармакодинамика",
+    "Показания": "Показания к применению",
+    "Показания к применению": "Показания к применению",
+    "Противопоказания": "Противопоказания",
+    "С осторожностью": "Противопоказания",
+    "Применение при беременности и кормлении грудью": "Беременность и лактация",
+    "Беременность": "Беременность и лактация",
+    "Лактация": "Беременность и лактация",
+    "Кормление грудью": "Беременность и лактация",
+    "Фертильность": "Беременность и лактация",
+    "Способ применения и дозы": "Способ применения и дозы",
+    "Режим дозирования": "Способ применения и дозы",
+    "Побочные действия": "Побочные действия",
+    "Взаимодействие": "Взаимодействие",
+    "Передозировка": "Передозировка",
+    "Особые указания": "Особые указания",
+    "Меры предосторожности": "Особые указания",
+    "Влияние на способность управлять транспортными средствами и механизмами": "Особые указания",
+    "Форма выпуска": "Форма выпуска",
+    "Условия хранения": "Условия хранения",
+    "Срок годности": "Срок годности",
+    "Условия отпуска из аптек": "Условия отпуска",
+    "Производитель": "Производитель",
+}
+
+def parse_sections(text: str):
+    """Split a document into (section_name, section_body) pairs."""
+    sections = []
+    current_section = "Описание"
+    current_body = []
+
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if stripped in SECTION_MAP:
+            # Flush the previous section
+            if current_body:
+                sections.append((current_section, "\n".join(current_body).strip()))
+            current_section = SECTION_MAP[stripped]
+            current_body = []
+        else:
+            current_body.append(line)
+
+    # Flush the final section
+    if current_body:
+        sections.append((current_section, "\n".join(current_body).strip()))
+
+    # Drop empty sections (some files may have empty 'Описание' if first line is a header)
+    return [(name, body) for name, body in sections if body]
+
+# Append all drugs from data/drugs to the list
 documents = []
 for filename in sorted(os.listdir("data/drugs")):
     if filename.endswith(".txt"):
@@ -47,17 +125,31 @@ for filepath, source_label in documents:
     with open(filepath, "r", encoding="utf-8") as file:
         text = file.read()
 
-    chunks = splitter.split_text(text)
-    embeddings = model.encode([f"context: {chunk}" for chunk in chunks])
+    # Derive drug display name from filename
+    drug_key = os.path.basename(filepath).replace(".txt", "")
+    drug_name = DRUG_NAMES.get(drug_key, drug_key)
 
-    for chunk, embedding in zip(chunks, embeddings):
+    # Parse into sections
+    sections = parse_sections(text)
+
+    # Chunk each section, prefix every chunk with [Drug — Section]
+    prefixed_chunks = []
+    for section_name, section_body in sections:
+        section_chunks = splitter.split_text(section_body)
+        for chunk in section_chunks:
+            prefixed = f"[{drug_name} — {section_name}]\n{chunk}"
+            prefixed_chunks.append(prefixed)
+
+    embeddings = model.encode([f"context: {chunk}" for chunk in prefixed_chunks])
+
+    for chunk, embedding in zip(prefixed_chunks, embeddings):
         cur.execute(
             "INSERT INTO chunks (source, chunk_text, embedding) VALUES (%s, %s, %s)",
             (source_label, chunk, embedding.tolist()),
         )
 
-    print(f"Ingested {len(chunks)} chunks from {source_label}")
-    total_chunks += len(chunks)
+    print(f"Ingested {len(prefixed_chunks)} chunks from {source_label} ({len(sections)} sections)")
+    total_chunks += len(prefixed_chunks)
 
 conn.commit()
 cur.close()
