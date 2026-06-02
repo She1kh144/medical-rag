@@ -53,6 +53,8 @@ cited answer + disclaimer
 
 **RecursiveCharacterTextSplitter (structure-aware chunking).** An initial hand-written character-count chunker produced visible mid-word and mid-sentence cuts on Russian text, which degraded retrieval on factual passages. Switching to LangChain's RecursiveCharacterTextSplitter — which prefers paragraph and sentence boundaries before falling back to character cuts — improved chunk coherence and retrieval distance scores on the same queries.
 
+**Section-aware chunking with drug-name prefixes.** Documents are parsed into their standard sections (Показания, Противопоказания, Способ применения и дозы, etc.) and each chunk is prefixed with [<Brand> (<active ingredient>) — <Section>]. This embeds drug identity and section context directly into every chunk vector, so a query like "противопоказания ибупрофена" or "с какого возраста принимать лоратадин" aligns with the prefix and pulls the right chunk.
+
 **Cross-encoder reranking in second stage.** After scaling the corpus from 3 to 15 documents, baseline answer accuracy dropped because semantic neighbors crowd the right chunks at top-k. A cross-encoder reranker (bge-reranker-v2-m3) re-scores the top-50 bi-encoder candidates by reading query + chunk together, surfacing the actually-relevant passage. Toggled per-request via a `rerank` flag; default off because latency on CPU is ~50s/request. See Evaluation for the measured impact.
 
 **Reranker lazy-loaded; HuggingFace cache mounted from host.** The cross-encoder model is ~2.27GB. Rather than baking it into the Docker image (tripling image size), it's loaded on first use and read from a host-mounted HuggingFace cache. The Docker image stays small; the model downloads once on the host and is reused across container restarts.
@@ -81,12 +83,14 @@ Keyword matching uses stem fragments rather than full inflected forms, to accomm
 
 ### Results
 
-| Mode | Retrieval (top-3) | Answer accuracy |
+| Configuration | Retrieval (top-3) | Answer accuracy |
 |---|---|---|
-| No reranker | 96% (28/29) | 82% (24/29) |
-| With reranker | 93% (27/29) | **93% (27/29)** |
+| Old chunking, no reranker | 96% (28/29) | 86% (25/29) |
+| Old chunking, with reranker | 93% (27/29) | 96% (28/29) |
+| Section-aware chunking, no reranker | 96% (28/29) | **96% (28/29)** |
+| Section-aware chunking, with reranker | 96% (28/29) | 96% (28/29) |
 
-The reranker traded another retrieval point for three answer points (it surfaced specific factual chunks the bi-encoder couldn't). Net: +11 percentage points on answer accuracy. The regression case is handled correctly at runtime — the safety prompt makes the system refuse rather than hallucinate when retrieval is off — but it illustrates a general property of cross-encoder reranking: more decisive than the bi-encoder.
+Reranking lifted answer accuracy from 86% to 96% on the old chunking — (one question was evaluated wrongly in the previous tests, now, the table is correct), replicated on the expanded 29-question eval as +10%. Section-aware chunking achieved the same 96% on its own, at zero runtime cost. Adding the reranker on top of section-aware chunking provided no further gain (96% → 96%), suggesting the two techniques addressed the same underlying failure (right chunk not surfacing among semantic neighbors) and that the chunking version is the cleaner solution.
 
 ## Known limitations / Future work
 
@@ -96,6 +100,7 @@ The reranker traded another retrieval point for three answer points (it surfaced
 - **Substring-based eval.** Stem matching handles Russian inflection but not deeper paraphrasing. An LLM-as-judge eval would be more robust at the cost of additional API calls.
 - **General-purpose generation model.** `deepseek-chat` is not medically tuned. Real medical use would require a domain-tuned model and clinical review.
 - **Retrieval is based on textual similarity; queries phrased in terms not used by the source document (e.g., asking by age when the source dosing is by weight) may fail to retrieve relevant chunks. Query rewriting via the LLM could mitigate this.**
+- **Numeric-fact retrieval is still weak.** The current eval set contains one question that fails across all four configurations: "У какого препарата период полувыведения около 27 часов?" — the answer exists in the Эриус document, but "27 часов" carries weak semantic signal (most pharmacokinetics chunks discuss half-lives in hours), so pure semantic retrieval can't distinguish it. This is the canonical case for hybrid retrieval (BM25 keyword + vector), where exact-token matching would surface the right chunk instantly. This is the next planned improvement.
 
 ## Running it
 
