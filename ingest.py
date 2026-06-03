@@ -3,6 +3,7 @@ import psycopg2
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from contextualize import generate_context, _load_cache, _save_cache
 
 load_dotenv()
 
@@ -137,13 +138,18 @@ for filepath, source_label in documents:
     # Parse into sections
     sections = parse_sections(text)
 
+    cache = _load_cache() # Save and load cache around each document to avoid re-generating contexts for unchanged chunks across documents
+
     # Chunk each section, prefix every chunk with [Drug — Section]
     prefixed_chunks = []
     for section_name, section_body in sections:
         section_chunks = splitter.split_text(section_body)
         for chunk in section_chunks:
-            prefixed = f"[{name_prefix} — {section_name}]\n{chunk}"
+            context = generate_context(chunk, name_prefix, cache)
+            prefixed = f"[{name_prefix} — {section_name}]\nКонтекст: {context}\n{chunk}"
             prefixed_chunks.append(prefixed)
+
+    _save_cache(cache) # Save cache after processing each document to persist any new contexts generated
 
     embeddings = model.encode([f"context: {chunk}" for chunk in prefixed_chunks])
 
