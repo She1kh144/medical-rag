@@ -16,7 +16,7 @@
   },
   {
     "question": "До какого возраста строго противопоказан аспирин?",
-    "expected_source": ["acetylsalicylic_acid_rlsnet", "ацетилсалициловая кислота"],
+    "expected_source": ["aspirin_rlsnet", "аспирин"],
     "expected_keywords": ["15 лет", "синдром рейе"]
   },
   {
@@ -101,7 +101,7 @@
   },
   {
     "question": "Что принимать от боли в суставах и мышцах у взрослого?",
-    "expected_source": ["ibuprofen_rlsnet", "paracetamol_rlsnet", "acetylsalicylic_acid_rlsnet", "ketorol_rlsnet", "nise_rlsnet", "ибупрофен", "парацетамол", "ацетилсалициловая кислота", "кеторол", "найз"],
+    "expected_source": ["ibuprofen_rlsnet", "paracetamol_rlsnet", "aspirin_rlsnet", "ketorol_rlsnet", "nise_rlsnet", "ибупрофен", "парацетамол", "аспирин", "кеторол", "найз"],
     "expected_keywords": ["ибупрофен", "парацетамол", "аспирин", "кеторолак", "нимесулид", "боль в суставах"]
   },
   {
@@ -111,7 +111,7 @@
   },
   {
     "question": "Что принимать от головной боли и температуры?",
-    "expected_source": ["paracetamol_rlsnet", "ibuprofen_rlsnet", "acetylsalicylic_acid_rlsnet", "nise_rlsnet", "ketorol_rlsnet", "парацетамол", "ибупрофен", "ацетилсалициловая кислота", "найз", "кеторол"],
+    "expected_source": ["paracetamol_rlsnet", "ibuprofen_rlsnet", "aspirin_rlsnet", "nise_rlsnet", "ketorol_rlsnet", "парацетамол", "ибупрофен", "аспирин", "найз", "кеторол"],
     "expected_keywords": ["парацетамол", "ибупрофен", "аспирин", "нимесулид", "жаропонижающее", "головная боль"]
   },
   {
@@ -196,7 +196,7 @@
   },
   {
     "question": "При дефиците какого фермента аспирин противопоказан?",
-    "expected_source": ["acetylsalicylic_acid_rlsnet", "ацетилсалициловая кислота"],
+    "expected_source": ["aspirin_rlsnet", "аспирин"],
     "expected_keywords": ["глюкозо-6-фосфатдегидрогеназы", "g6pd"]
   },
   {
@@ -261,7 +261,7 @@
   },
   {
     "question": "Какой НПВС лучше при воспалении суставов?",
-    "expected_source": ["ibuprofen_rlsnet", "nise_rlsnet", "ketorol_rlsnet", "acetylsalicylic_acid_rlsnet", "ибупрофен", "найз", "кеторол", "ацетилсалициловая кислота"],
+    "expected_source": ["ibuprofen_rlsnet", "nise_rlsnet", "ketorol_rlsnet", "aspirin_rlsnet", "ибупрофен", "найз", "кеторол", "аспирин"],
     "expected_keywords": ["ибупрофен", "нимесулид", "кеторолак", "аспирин", "противовоспалительное"]
   },
   {
