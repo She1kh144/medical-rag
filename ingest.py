@@ -3,6 +3,7 @@ import psycopg2
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from hypotheticals import generate_hypothetical_questions, _load_cache, _save_cache
 
 load_dotenv()
 
@@ -129,7 +130,7 @@ for filepath, source_label in documents:
     drug_key = os.path.basename(filepath).replace(".txt", "")
     brand, active_ingredient = DRUG_NAMES.get(drug_key, (drug_key, drug_key))
 
-    if brand == active_ingredient:
+    if brand.lower() == active_ingredient.lower():
         name_prefix = brand
     else:
         name_prefix = f"{brand} ({active_ingredient})"
@@ -137,13 +138,19 @@ for filepath, source_label in documents:
     # Parse into sections
     sections = parse_sections(text)
 
+    cache = _load_cache() # Load cache for this document to avoid re-generating unchanged chunks
+
     # Chunk each section, prefix every chunk with [Drug — Section]
     prefixed_chunks = []
     for section_name, section_body in sections:
         section_chunks = splitter.split_text(section_body)
         for chunk in section_chunks:
-            prefixed = f"[{name_prefix} — {section_name}]\n{chunk}"
+            questions = generate_hypothetical_questions(chunk, name_prefix, cache)
+            questions_block = "Возможные вопросы:\n" + "\n".join(f"- {q}" for q in questions)
+            prefixed = f"[{name_prefix} — {section_name}]\n{questions_block}\n{chunk}"
             prefixed_chunks.append(prefixed)
+
+    _save_cache(cache)  # Save cache after processing each document, so we don't lose progress if interrupted
 
     embeddings = model.encode([f"context: {chunk}" for chunk in prefixed_chunks])
 
