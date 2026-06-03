@@ -71,6 +71,31 @@ def retrieve(query: str, k: int):
     conn.close()
     return results
 
+def retrieve_bm25(query: str, k: int = 50):
+    """Keyword retrieval via Postgres full-text search."""
+    conn = psycopg2.connect(
+        host=os.environ.get("DB_HOST", "localhost"),
+        port=int(os.environ.get("DB_PORT", "5433")),
+        dbname=os.environ.get("DB_NAME", "medical_rag"),
+        user=os.environ.get("DB_USER", "postgres"),
+        password=os.environ.get("DB_PASSWORD", "devpassword"),
+    )
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT chunk_text, source, ts_rank_cd(tsv, query) AS rank
+        FROM chunks, plainto_tsquery('russian', %s) query
+        WHERE tsv @@ query
+        ORDER BY rank DESC
+        LIMIT %s
+        """,
+        (query, k),
+    )
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    return results
+
 def generate_answer(query: str, chunks):
     """Generate an answer using the retrieved chunks as context."""
     context = "\n\n".join(

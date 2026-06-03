@@ -115,9 +115,11 @@ cur.execute("""
         id SERIAL PRIMARY KEY,
         source TEXT NOT NULL,
         chunk_text TEXT NOT NULL,
-        embedding vector(384)
+        embedding vector(384),
+        tsv tsvector
     );
 """)
+cur.execute("CREATE INDEX IF NOT EXISTS chunks_tsv_idx ON chunks USING GIN (tsv);")
 conn.commit()
 
 total_chunks = 0
@@ -149,8 +151,11 @@ for filepath, source_label in documents:
 
     for chunk, embedding in zip(prefixed_chunks, embeddings):
         cur.execute(
-            "INSERT INTO chunks (source, chunk_text, embedding) VALUES (%s, %s, %s)",
-            (source_label, chunk, embedding.tolist()),
+            """
+            INSERT INTO chunks (source, chunk_text, embedding, tsv) 
+            VALUES (%s, %s, %s, to_tsvector('russian', %s))
+            """,
+            (source_label, chunk, embedding.tolist(), chunk),
         )
 
     print(f"Ingested {len(prefixed_chunks)} chunks from {source_label} ({len(sections)} sections)")
