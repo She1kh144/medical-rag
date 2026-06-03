@@ -21,7 +21,7 @@ def normalize(s):
 def evaluate_one(item, top_n=3):
     response = requests.post(
         API_URL,
-        json={"query": item["question"], "rerank": False, "k": 10},
+        json={"query": item["question"], "rerank": False, "hybrid": False, "k": 10},
         #timeout=60,
     )
     response.raise_for_status()

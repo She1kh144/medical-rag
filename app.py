@@ -22,6 +22,7 @@ class Question(BaseModel):
     query: str
     k: int = 10
     rerank: bool = False
+    hybrid: bool = False
 
 class Answer(BaseModel):
     answer: str
@@ -84,7 +85,7 @@ def retrieve_bm25(query: str, k: int = 50):
     cur.execute(
         """
         SELECT chunk_text, source, ts_rank_cd(tsv, query) AS rank
-        FROM chunks, plainto_tsquery('russian', %s) query
+        FROM chunks, websearch_to_tsquery('russian', %s) query
         WHERE tsv @@ query
         ORDER BY rank DESC
         LIMIT %s
@@ -95,6 +96,39 @@ def retrieve_bm25(query: str, k: int = 50):
     cur.close()
     conn.close()
     return results
+
+def hybrid_retrieve(query: str, k: int = 50):
+    """Combine vector and BM25 retrieval using RRF (Reciprocal Rank Fusion)."""
+    vector_results = retrieve(query, k=k)
+    bm25_results = retrieve_bm25(query, k=k)
+
+    # Build rank dicts keyed by chunk_text (since that's what's unique per chunk)
+    # Rank starts at 1 for the top result
+    vector_ranks = {chunk[0]: rank for rank, chunk in enumerate(vector_results, start=1)}
+    bm25_ranks = {chunk[0]: rank for rank, chunk in enumerate(bm25_results, start=1)}
+
+    # Collect all unique chunks from both lists, preserving the full tuple
+    all_chunks = {}
+    for chunk in vector_results:
+        all_chunks[chunk[0]] = chunk
+    for chunk in bm25_results:
+        if chunk[0] not in all_chunks:
+            all_chunks[chunk[0]] = chunk
+
+    # Compute RRF scores
+    C = 60  # RRF smoothing constant
+    rrf_scores = {}
+    for chunk_text in all_chunks:
+        score = 0
+        if chunk_text in vector_ranks:
+            score += 1 / (C + vector_ranks[chunk_text])
+        if chunk_text in bm25_ranks:
+            score += 1 / (C + bm25_ranks[chunk_text])
+        rrf_scores[chunk_text] = score
+
+    # Sort by RRF score descending, return top-k
+    sorted_chunks = sorted(all_chunks.values(), key=lambda chunk: rrf_scores[chunk[0]], reverse=True)
+    return sorted_chunks[:k]
 
 def generate_answer(query: str, chunks):
     """Generate an answer using the retrieved chunks as context."""
@@ -127,8 +161,11 @@ def health():
 @app.post("/ask", response_model=Answer)
 def ask(question: Question):
     try:
-        # Bi-encoder retrieval with optional reranking step
-        candidates = retrieve(question.query, k=50 if question.rerank else question.k)
+        if question.hybrid:
+            candidates = hybrid_retrieve(question.query, k=50 if question.rerank else question.k)
+        else:
+            # Bi-encoder retrieval with optional reranking step
+            candidates = retrieve(question.query, k=50 if question.rerank else question.k)
         
         if not candidates:
             raise HTTPException(status_code=404, detail="No chunks found")
