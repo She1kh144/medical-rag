@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     /* === Reset & base === */
     *, *::before, *::after { box-sizing: border-box; }
@@ -104,10 +105,16 @@
       color: #0f172a;
       font-size: 15px;
       line-height: 1.7;
-      white-space: pre-wrap;
       margin-bottom: 20px;
       min-height: 24px;
     }
+    .answer-text p { margin-bottom: 12px; }
+    .answer-text p:last-child { margin-bottom: 0; }
+    .answer-text strong { font-weight: 500; color: #0f172a; }
+    .answer-text ul, .answer-text ol {
+      margin: 8px 0 12px 24px;
+    }
+    .answer-text li { margin-bottom: 4px; }
 
     .sources {
       display: flex;
@@ -170,6 +177,8 @@
     const answerTextEl = document.getElementById('answer-text');
     const sourcesEl = document.getElementById('sources');
 
+    let accumulatedAnswer = '';
+
     queryEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -184,8 +193,10 @@
 
       // Reveal answer area, clear previous results, disable submit
       answerSection.classList.add('visible');
-      answerTextEl.textContent = '';
+      answerTextEl.innerHTML = '';
+      accumulatedAnswer = '';
       sourcesEl.innerHTML = '';
+
       submitBtn.disabled = true;
       submitBtn.textContent = 'Поиск...';
 
@@ -243,11 +254,11 @@
         sourcesEl.innerHTML = unique
           .map(s => `<span class="source-tag">${s}</span>`)
           .join('');
-      } else if (event === 'token') {
-        // Unescape the newlines we escaped on the server
-        const text = data.replace(/\\n/g, '\n');
-        answerTextEl.textContent += text;
-      }
+        } else if (event === 'token') {
+          const text = data.replace(/\\n/g, '\n');
+          accumulatedAnswer += text;
+          answerTextEl.innerHTML = marked.parse(accumulatedAnswer);
+        }
       // 'done' event we just ignore — the finally block handles cleanup
     }
   </script>
