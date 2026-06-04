@@ -143,6 +143,81 @@
       .header h1 { font-size: 20px; }
       textarea { font-size: 16px; } /* 16px prevents iOS auto-zoom on focus */
     }
+
+    /* === Loading indicator === */
+    .loading-dots {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .loading-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #94a3b8;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    /* === Example questions === */
+    .examples {
+      margin-top: 20px;
+    }
+    .examples-label {
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .example-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .example-item {
+      text-align: left;
+      background: none;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #475569;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .example-item:hover {
+      border-color: #1e40af;
+      color: #1e40af;
+      background: #f8fafc;
+    }
+
+    /* === Footer === */
+    .footer {
+      max-width: 720px;
+      margin: 20px auto 0;
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .footer a {
+      color: #64748b;
+      text-decoration: none;
+      border-bottom: 1px solid #cbd5e1;
+      padding-bottom: 1px;
+      transition: color 0.15s;
+    }
+    .footer a:hover {
+      color: #1e40af;
+      border-bottom-color: #1e40af;
+    }
   </style>
 </head>
 <body>
@@ -161,6 +236,16 @@
       <button type="submit" class="submit-btn" id="submit-btn">Спросить</button>
     </form>
 
+    <div class="examples" id="examples">
+      <p class="examples-label">Примеры вопросов</p>
+      <div class="example-list">
+        <button class="example-item" type="button">Какая дозировка парацетамола для взрослых?</button>
+        <button class="example-item" type="button">При каких заболеваниях противопоказан ибупрофен?</button>
+        <button class="example-item" type="button">С какого возраста можно принимать лоратадин?</button>
+        <button class="example-item" type="button">Какой период полувыведения у дезлоратадина?</button>
+      </div>
+    </div>
+
     <div class="answer-section" id="answer-section">
       <p class="answer-label">Ответ</p>
       <p class="answer-text" id="answer-text"></p>
@@ -169,6 +254,10 @@
     </div>
   </div>
 
+  <footer class="footer">
+    <a href="https://github.com/She1kh144/medical-rag" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
   <script>
     const form = document.getElementById('ask-form');
     const queryEl = document.getElementById('query');
@@ -176,15 +265,11 @@
     const answerSection = document.getElementById('answer-section');
     const answerTextEl = document.getElementById('answer-text');
     const sourcesEl = document.getElementById('sources');
+    const examples = document.getElementById('examples');
+    const exampleItems = document.querySelectorAll('.example-item');
 
     let accumulatedAnswer = '';
-
-    queryEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        form.requestSubmit();
-      }
-    });
+    let firstTokenReceived = false;
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -193,12 +278,15 @@
 
       // Reveal answer area, clear previous results, disable submit
       answerSection.classList.add('visible');
-      answerTextEl.innerHTML = '';
+      examples.style.display = 'none';
       accumulatedAnswer = '';
       sourcesEl.innerHTML = '';
-
       submitBtn.disabled = true;
       submitBtn.textContent = 'Поиск...';
+
+      // Show loading dots until first token arrives
+      answerTextEl.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+      firstTokenReceived = false;
 
       try {
         const response = await fetch('/ask/stream', {
@@ -237,6 +325,22 @@
       }
     });
 
+    // Keyboard: Enter to submit, Shift+Enter for newline
+    queryEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    // Click an example to populate and submit
+    exampleItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        queryEl.value = item.textContent;
+        form.requestSubmit();
+      });
+    });
+
     function handleSSEMessage(raw) {
       // Each message has lines like "event: token" and "data: ..."
       const lines = raw.split('\n');
@@ -256,6 +360,10 @@
           .join('');
         } else if (event === 'token') {
           const text = data.replace(/\\n/g, '\n');
+          if (!firstTokenReceived) {
+            answerTextEl.innerHTML = '';
+            firstTokenReceived = true;
+          }
           accumulatedAnswer += text;
           answerTextEl.innerHTML = marked.parse(accumulatedAnswer);
         }
