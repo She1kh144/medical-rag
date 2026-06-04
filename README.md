@@ -16,6 +16,7 @@ It is an information-retrieval tool, not a medical advisor.
 - **bge-reranker-v2-m3** cross-encoder, lazy-loaded, used as a second-stage reranker
 - **DeepSeek API** for generation (OpenAI-compatible)
 - The full stack runs via **docker-compose** with one command
+- A static **single-page** frontend (static/index.html) consumes the streaming endpoint via Server-Sent Events. Markdown rendering, keyboard shortcuts, example queries, and responsive mobile layout. No build step — vanilla HTML/CSS/JS.
 
 Request flow:
 

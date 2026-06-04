@@ -9,6 +9,61 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
+    /* === Color variables === */
+    :root {
+      --bg-page: #f5f5f5;
+      --bg-container: #ffffff;
+      --bg-input: #f8fafc;
+      --bg-source: #dbeafe;
+      --bg-example-hover: #f8fafc;
+
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --text-label: #94a3b8;
+      --text-example: #475569;
+      --text-footer: #64748b;
+      --text-source: #1e3a8a;
+
+      --border-default: #e5e7eb;
+      --border-input: #cbd5e1;
+      --border-footer-link: #cbd5e1;
+
+      --accent: #1e40af;
+      --accent-hover: #1e3a8a;
+      --accent-focus-ring: rgba(30, 64, 175, 0.1);
+
+      --btn-text: #ffffff;
+      --btn-disabled-bg: #94a3b8;
+    }
+
+    :root.dark {
+      --bg-page: #0f172a;
+      --bg-container: #1e293b;
+      --bg-input: #0f172a;
+      --bg-source: #1e3a5f;
+      --bg-example-hover: #233044;
+
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --text-label: #64748b;
+      --text-example: #cbd5e1;
+      --text-footer: #94a3b8;
+      --text-source: #93c5fd;
+
+      --border-default: #334155;
+      --border-input: #334155;
+      --border-footer-link: #334155;
+
+      --accent: #3b82f6;
+      --accent-hover: #60a5fa;
+      --accent-focus-ring: rgba(59, 130, 246, 0.15);
+
+      --btn-text: #f1f5f9;
+      --btn-disabled-bg: #475569;
+    }
+
     /* === Reset & base === */
     *, *::before, *::after { box-sizing: border-box; }
     body, h1, h2, p, button, input, textarea {
@@ -17,19 +72,21 @@
     }
 
     body {
-      background: #f5f5f5;
-      color: #0f172a;
+      background: var(--bg-page);
+      color: var(--text-primary);
       min-height: 100vh;
       padding: 40px 20px;
+      transition: background 0.2s, color 0.2s;
     }
 
     .container {
       max-width: 720px;
       margin: 0 auto;
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
+      background: var(--bg-container);
+      border: 1px solid var(--border-default);
       border-radius: 8px;
       padding: 40px 48px;
+      transition: background 0.2s, border-color 0.2s;
     }
 
     /* === Header === */
@@ -37,14 +94,40 @@
       font-size: 24px;
       font-weight: 500;
       letter-spacing: -0.01em;
-      color: #0f172a;
+      color: var(--text-primary);
       margin-bottom: 6px;
     }
     .header .subtitle {
-      color: #64748b;
+      color: var(--text-secondary);
       font-size: 14px;
       margin-bottom: 32px;
     }
+
+    /* === Theme toggle === */
+    .header { position: relative; }
+    .theme-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 1px solid var(--border-default);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .theme-toggle:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .theme-toggle .icon-moon { display: none; }
+    :root.dark .theme-toggle .icon-sun { display: none; }
+    :root.dark .theme-toggle .icon-moon { display: inline-block; }
 
     /* === Form === */
     .form { display: flex; flex-direction: column; gap: 12px; }
@@ -53,26 +136,27 @@
       width: 100%;
       min-height: 80px;
       padding: 14px 18px;
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
+      border: 1px solid var(--border-input);
+      background: var(--bg-input);
       border-radius: 6px;
       font-size: 15px;
-      color: #0f172a;
+      color: var(--text-primary);
       resize: vertical;
       font-family: inherit;
       line-height: 1.5;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
-    textarea::placeholder { color: #94a3b8; }
+    textarea::placeholder { color: var(--text-muted); }
     textarea:focus {
       outline: none;
-      border-color: #1e40af;
-      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-focus-ring);
     }
 
     .submit-btn {
       align-self: flex-start;
-      background: #1e40af;
-      color: white;
+      background: var(--accent);
+      color: var(--btn-text);
       border: none;
       padding: 10px 22px;
       border-radius: 6px;
@@ -81,20 +165,20 @@
       cursor: pointer;
       transition: background 0.15s;
     }
-    .submit-btn:hover:not(:disabled) { background: #1e3a8a; }
-    .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    .submit-btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .submit-btn:disabled { background: var(--btn-disabled-bg); cursor: not-allowed; }
 
     /* === Answer area === */
     .answer-section {
       display: none;
       margin-top: 32px;
       padding-top: 28px;
-      border-top: 1px solid #e5e7eb;
+      border-top: 1px solid var(--border-default);
     }
     .answer-section.visible { display: block; }
 
     .answer-label {
-      color: #94a3b8;
+      color: var(--text-label);
       font-size: 11px;
       font-weight: 500;
       letter-spacing: 0.08em;
@@ -102,7 +186,7 @@
       margin-bottom: 12px;
     }
     .answer-text {
-      color: #0f172a;
+      color: var(--text-primary);
       font-size: 15px;
       line-height: 1.7;
       margin-bottom: 20px;
@@ -110,7 +194,7 @@
     }
     .answer-text p { margin-bottom: 12px; }
     .answer-text p:last-child { margin-bottom: 0; }
-    .answer-text strong { font-weight: 500; color: #0f172a; }
+    .answer-text strong { font-weight: 500; color: var(--text-primary); }
     .answer-text ul, .answer-text ol {
       margin: 8px 0 12px 24px;
     }
@@ -124,14 +208,14 @@
     }
     .source-tag {
       font-size: 12px;
-      color: #1e3a8a;
-      background: #dbeafe;
+      color: var(--text-source);
+      background: var(--bg-source);
       padding: 4px 12px;
       border-radius: 12px;
     }
 
     .disclaimer {
-      color: #94a3b8;
+      color: var(--text-muted);
       font-size: 12px;
       font-style: italic;
     }
@@ -141,7 +225,7 @@
       body { padding: 20px 12px; }
       .container { padding: 24px 20px; border-radius: 6px; }
       .header h1 { font-size: 20px; }
-      textarea { font-size: 16px; } /* 16px prevents iOS auto-zoom on focus */
+      textarea { font-size: 16px; }
     }
 
     /* === Loading indicator === */
@@ -154,7 +238,7 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #94a3b8;
+      background: var(--text-muted);
       animation: pulse 1.4s ease-in-out infinite;
     }
     .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
@@ -169,7 +253,7 @@
       margin-top: 20px;
     }
     .examples-label {
-      color: #94a3b8;
+      color: var(--text-label);
       font-size: 11px;
       font-weight: 500;
       letter-spacing: 0.08em;
@@ -184,19 +268,19 @@
     .example-item {
       text-align: left;
       background: none;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border-default);
       border-radius: 6px;
       padding: 10px 14px;
       font-size: 14px;
-      color: #475569;
+      color: var(--text-example);
       cursor: pointer;
       font-family: inherit;
       transition: all 0.15s;
     }
     .example-item:hover {
-      border-color: #1e40af;
-      color: #1e40af;
-      background: #f8fafc;
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--bg-example-hover);
     }
 
     /* === Footer === */
@@ -205,24 +289,28 @@
       margin: 20px auto 0;
       text-align: center;
       font-size: 13px;
-      color: #94a3b8;
+      color: var(--text-muted);
     }
     .footer a {
-      color: #64748b;
+      color: var(--text-footer);
       text-decoration: none;
-      border-bottom: 1px solid #cbd5e1;
+      border-bottom: 1px solid var(--border-footer-link);
       padding-bottom: 1px;
       transition: color 0.15s;
     }
     .footer a:hover {
-      color: #1e40af;
-      border-bottom-color: #1e40af;
+      color: var(--accent);
+      border-bottom-color: var(--accent);
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Переключить тему">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </button>
       <h1>Medical RAG</h1>
       <p class="subtitle">Справочная система по препаратам</p>
     </div>
@@ -267,6 +355,21 @@
     const sourcesEl = document.getElementById('sources');
     const examples = document.getElementById('examples');
     const exampleItems = document.querySelectorAll('.example-item');
+
+    const themeToggle = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+
+    // Initialize theme: stored preference > system preference > light
+    const storedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (storedTheme === 'dark' || (!storedTheme && systemPrefersDark)) {
+      root.classList.add('dark');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      root.classList.toggle('dark');
+      localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
+    });
 
     let accumulatedAnswer = '';
     let firstTokenReceived = false;
