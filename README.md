@@ -63,6 +63,8 @@ cited answer + disclaimer
 
 **Auto-discovered ingest.** `ingest.py` reads every `.txt` file from `data/drugs` and derives the source label from the filename. Adding a document is one drag-and-drop plus a re-ingest; no code change.
 
+**Hypothetical questions** at ingest time directly addresses the user-phrasing-to-document-phrasing gap that section-aware prefixing and contextual chunks could not. By generating 3 synthetic user-style questions per chunk and embedding them alongside the chunk text, retrieval no longer relies on the user phrasing their question the way the document is written. Particularly effective on numeric-fact lookups, where the chunk now carries 'У какого препарата период полувыведения 27 часов?' as embedded text, sitting much closer to real user queries than the document text 'T1/2 — 20–30 ч' does.
+
 ## Safety properties
 
 - Answers are constructed only from retrieved context, never from the model's training knowledge. This is enforced by the system prompt.
@@ -81,16 +83,17 @@ The scorer checks two things:
 
 Keyword matching uses stem fragments rather than full inflected forms, to accommodate Russian morphology (e.g. `печеноч` matches `печеночная`, `печеночной`, `печеночному`).
 
-### Results
+### Results without reranker
 
 | Configuration | Retrieval (top-3) | Answer accuracy |
 |---|---|---|
-| Old chunking, no reranker | 96% (28/29) | 86% (25/29) |
-| Old chunking, with reranker | 93% (27/29) | 96% (28/29) |
-| Section-aware chunking, no reranker | 96% (28/29) | **96% (28/29)** |
-| Section-aware chunking, with reranker | 96% (28/29) | 96% (28/29) |
+| Old chunking | 89% (57/64) | 76% (49/64) |
+| Section-aware chunking | 87% (56/64) | 92% (59/64) |
+| Section-aware + Hybrid-retrieval | 87% (56/64) | 92% (59/64) |
+| Section-aware + contextual | 87% (56/64) | 92% (59/64) |
+| Section-aware + hypothetical questions | **89% (57/64)** | **95% (61/64)** |
 
-Reranking lifted answer accuracy from 86% to 96% on the old chunking — (one question was evaluated wrongly in the previous tests, now, the table is correct), replicated on the expanded 29-question eval as +10%. Section-aware chunking achieved the same 96% on its own, at zero runtime cost. Adding the reranker on top of section-aware chunking provided no further gain (96% → 96%), suggesting the two techniques addressed the same underlying failure (right chunk not surfacing among semantic neighbors) and that the chunking version is the cleaner solution.
+Section-aware chunking dramatically improved answer accuracy (+16%) over old chunking despite a marginal drop in retrieval rate, suggesting that chunk quality matters more than retrieval coverage. Adding hypothetical question indexing further recovered retrieval performance while pushing accuracy to 95%.
 
 ## Known limitations / Future work
 
@@ -102,7 +105,8 @@ Reranking lifted answer accuracy from 86% to 96% on the old chunking — (one qu
 - **Retrieval is based on textual similarity.** queries phrased in terms not used by the source document (e.g., asking by age when the source dosing is by weight) may fail to retrieve relevant chunks. Query rewriting via the LLM could mitigate this.
 - **Numeric-fact retrieval is still weak.** The current eval set contains one question that fails across all four configurations: "У какого препарата период полувыведения около 27 часов?" — the answer exists in the Эриус document, but "27 часов" carries weak semantic signal (most pharmacokinetics chunks discuss half-lives in hours), so pure semantic retrieval can't distinguish it. This is the canonical case for hybrid retrieval (BM25 keyword + vector), where exact-token matching would surface the right chunk instantly. This is the next planned improvement.
 - **Hybrid retrieval was evaluated and did not improve accuracy.** A BM25 keyword-search stage (Postgres tsvector + RRF merge with vector search) was implemented as a candidate fix for queries on specific numeric facts. On the 64-question eval, hybrid produced no measurable lift over section-aware chunking alone. The diagnosis: natural-language Russian queries ("период полувыведения около 27 часов") rarely share enough exact tokens with stemmed chunks ("T1/2 — 20–30 ч") for BM25 to surface the right answer, while RRF still pulls ranking toward low-quality BM25 matches. Implementation preserved on the hybrid-retrieval branch for reference. The principled fix for this failure mode is query rewriting (HyDE), which translates user phrasing toward document phrasing before retrieval.
-- **Evaluated HyDE (Hypothetical Document Embeddings) by hand-simulating LLM-rewritten queries against the corpus.** The hypotheticals failed to surface correct chunks for reverse-lookup numeric queries, indicating the failure mode is not a phrasing gap (which HyDE addresses) but a rare-fact problem — specific numbers in a single chunk cannot compete in embedding space against the broader semantic neighborhood. The principled fix would be structured metadata extraction at ingest time, which is out of scope for this prototype.
+- **Evaluated HyDE (Hypothetical Document Embeddings) by hand-simulating LLM-rewritten queries against the corpus.** The hypothetical answers failed to surface correct chunks for reverse-lookup numeric queries, indicating the failure mode is not a phrasing gap (which HyDE addresses) but a rare-fact problem — specific numbers in a single chunk cannot compete in embedding space against the broader semantic neighborhood. The principled fix would be structured metadata extraction at ingest time, which is out of scope for this prototype.
+needs update.
 
 ## Running it
 
