@@ -1,10 +1,10 @@
 import os
+import json
 import psycopg2
 from openai import OpenAI
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
 from sentence_transformers import SentenceTransformer, CrossEncoder
 
@@ -177,7 +177,6 @@ def ask_stream(question: Question):
 
     def event_stream():
         # First, send the sources as a structured event
-        import json
         sources = [{"source": src, "distance": float(dist)} for _, src, dist in chunks]
         yield f"event: sources\ndata: {json.dumps(sources)}\n\n"
 
