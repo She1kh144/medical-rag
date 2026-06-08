@@ -8,6 +8,10 @@ The user asks a question in Russian about a medication. The system retrieves the
 
 It is an information-retrieval tool, not a medical advisor.
 
+## Live demo
+
+Deployment runbook in [`DEPLOY.md`](DEPLOY.md). Tested production deployment on Ubuntu 22.04/24.04 via Docker Compose, with Caddy reverse proxy and automatic Let's Encrypt HTTPS. The instance is not currently live to keep hosting costs at zero; it can be redeployed in ~45 minutes.
+
 ## Architecture
 
 - **FastAPI** service exposing `/ask` and `/health` endpoints
@@ -56,7 +60,7 @@ cited answer + disclaimer
 
 **Section-aware chunking with drug-name prefixes.** Documents are parsed into their standard sections (Показания, Противопоказания, Способ применения и дозы, etc.) and each chunk is prefixed with [Brand (active ingredient) — Section]. This embeds drug identity and section context directly into every chunk vector, so a query like "противопоказания ибупрофена" or "с какого возраста принимать лоратадин" aligns with the prefix and pulls the right chunk.
 
-**Cross-encoder reranking in second stage.** After scaling the corpus from 3 to 15 documents, baseline answer accuracy dropped because semantic neighbors crowd the right chunks at top-k. A cross-encoder reranker (bge-reranker-v2-m3) re-scores the top-50 bi-encoder candidates by reading query + chunk together, surfacing the actually-relevant passage. Toggled per-request via a `rerank` flag; default off because latency on CPU is ~50s/request. See Evaluation for the measured impact.
+**Cross-encoder reranking** After scaling the corpus from 3 to 15 documents, baseline answer accuracy dropped because semantic neighbors crowd the right chunks at top-k. A cross-encoder reranker (bge-reranker-v2-m3) re-scores the top-50 bi-encoder candidates by reading query + chunk together, surfacing the actually-relevant passage. Toggled per-request via a `rerank` flag; default off because latency on CPU is ~50s/request.
 
 **Reranker lazy-loaded; HuggingFace cache mounted from host.** The cross-encoder model is ~2.27GB. Rather than baking it into the Docker image (tripling image size), it's loaded on first use and read from a host-mounted HuggingFace cache. The Docker image stays small; the model downloads once on the host and is reused across container restarts.
 
@@ -75,39 +79,46 @@ cited answer + disclaimer
 
 ## Evaluation
 
-The evaluation set (`drug_questions.json`) contains 29 Russian questions across the 15-drug corpus. Each question specifies an expected source document and a list of keyword stems that should appear in a correct answer. The eval script (`evaluate.py`) hits the running `/ask` endpoint twice — once with reranking off, once on — and produces two result files for direct comparison.
+The evaluation set (`data/drug_questions.json`) contains 64 Russian questions across the 15-drug corpus. Categories include single-drug factual lookup, symptom-based ambiguity ("что от боли в суставах"), active-substance queries (using ingredient name not brand), numeric-fact lookup (T1/2 values, percentages, age cutoffs), drug interactions, pregnancy/lactation, and refusal probes for out-of-scope questions.
+
+Each question specifies an expected source document and a list of keyword stems that should appear in a correct answer. The eval script (`evaluate.py`) hits the running `/ask` endpoint and writes `eval_result.json`.
 
 The scorer checks two things:
 
 - **Retrieval accuracy (top-3):** does at least one chunk from the expected source appear in the top three retrieved chunks?
 - **Answer accuracy:** does the generated answer contain at least one expected keyword stem **and** cite the expected source label?
 
-Keyword matching uses stem fragments rather than full inflected forms, to accommodate Russian morphology (e.g. `печеноч` matches `печеночная`, `печеночной`, `печеночному`).
+Keyword matching uses stem fragments rather than full inflected forms to accommodate Russian morphology (e.g. `печеноч` matches `печеночная`, `печеночной`, `печеночному`). Dash and `ё`/`е` variants are normalized.
 
-### Results without reranker
+### Results (no reranker)
 
 | Configuration | Retrieval (top-3) | Answer accuracy |
 |---|---|---|
-| Old chunking | 89% (57/64) | 76% (49/64) |
+| **Hypothetical questions (production)** | **89% (57/64)** | **95% (61/64)** |
 | Section-aware chunking | 87% (56/64) | 92% (59/64) |
-| Section-aware + Hybrid-retrieval | 87% (56/64) | 92% (59/64) |
-| Section-aware + contextual | 87% (56/64) | 92% (59/64) |
-| Section-aware + hypothetical questions | **89% (57/64)** | **95% (61/64)** |
+| Section-aware + contextual chunks | 87% (56/64) | 92% (59/64) |
+| Section-aware + hybrid retrieval | 87% (56/64) | 92% (59/64) |
+| Old chunking | 89% (57/64) | 76% (49/64) |
 
-Section-aware chunking dramatically improved answer accuracy (+16%) over old chunking despite a marginal drop in retrieval rate, suggesting that chunk quality matters more than retrieval coverage. Adding hypothetical question indexing further recovered retrieval performance while pushing accuracy to 95%.
+Hypothetical questions at ingest is the production retrieval strategy: 95% answer accuracy on the 64-question eval, +19% over the original baseline and +3% over section-aware chunking alone. Section-aware chunking was a substantial intermediate win (+16% over old chunking) and remains in the production pipeline; hypothetical questions builds on top of it. Hybrid retrieval and contextual chunks were evaluated and did not outperform section-aware alone — see Known limitations for diagnosis.
 
 ## Known limitations / Future work
 
-- **Reranker latency.** ~50s/request on CPU. Acceptable for evaluation, not for interactive use. Production deployment would require GPU inference, a lighter reranker, or a different approach entirely.
-- **Hybrid retrieval (BM25 + vectors)** would likely address the same recall-ceiling problem at lower runtime cost than reranking — keyword matching catches exact terms (drug names, specific dosages) that semantic search misses. Postgres has full-text search built in, so this could be implemented in the same database without new infrastructure.
-- **Eval set size.** 29 questions is enough to surface system properties but produces coarse percentages. Growing the set to 50-100 would tighten the numbers and exercise more cross-drug discrimination cases.
+- **Reranker latency.** ~50s/request on CPU. Acceptable for evaluation, not for interactive use. Production deployment would require GPU inference or a lighter reranker.
+
+- **Eval set size.** 64 questions is enough to surface system properties but produces coarse percentages. Growing the set to 100+ would tighten the numbers and exercise more cross-drug discrimination cases.
+
 - **Substring-based eval.** Stem matching handles Russian inflection but not deeper paraphrasing. An LLM-as-judge eval would be more robust at the cost of additional API calls.
+
 - **General-purpose generation model.** `deepseek-chat` is not medically tuned. Real medical use would require a domain-tuned model and clinical review.
-- **Retrieval is based on textual similarity.** queries phrased in terms not used by the source document (e.g., asking by age when the source dosing is by weight) may fail to retrieve relevant chunks. Query rewriting via the LLM could mitigate this.
-- **Numeric-fact retrieval is still weak.** The current eval set contains one question that fails across all four configurations: "У какого препарата период полувыведения около 27 часов?" — the answer exists in the Эриус document, but "27 часов" carries weak semantic signal (most pharmacokinetics chunks discuss half-lives in hours), so pure semantic retrieval can't distinguish it. This is the canonical case for hybrid retrieval (BM25 keyword + vector), where exact-token matching would surface the right chunk instantly. This is the next planned improvement.
-- **Hybrid retrieval was evaluated and did not improve accuracy.** A BM25 keyword-search stage (Postgres tsvector + RRF merge with vector search) was implemented as a candidate fix for queries on specific numeric facts. On the 64-question eval, hybrid produced no measurable lift over section-aware chunking alone. The diagnosis: natural-language Russian queries ("период полувыведения около 27 часов") rarely share enough exact tokens with stemmed chunks ("T1/2 — 20–30 ч") for BM25 to surface the right answer, while RRF still pulls ranking toward low-quality BM25 matches. Implementation preserved on the hybrid-retrieval branch for reference. The principled fix for this failure mode is query rewriting (HyDE), which translates user phrasing toward document phrasing before retrieval.
-- **Evaluated HyDE (Hypothetical Document Embeddings) by hand-simulating LLM-rewritten queries against the corpus.** The hypothetical answers failed to surface correct chunks for reverse-lookup numeric queries, indicating the failure mode is not a phrasing gap (which HyDE addresses) but a rare-fact problem — specific numbers in a single chunk cannot compete in embedding space against the broader semantic neighborhood. The principled fix would be structured metadata extraction at ingest time, which is out of scope for this prototype.
-needs update.
+
+- **Retrieval is based on textual similarity.** Queries phrased in terms not used by the source document (e.g., asking by age when the source dosing is by weight) may fail to retrieve relevant chunks.
+
+- **Hybrid retrieval was evaluated and did not improve accuracy.** A BM25 keyword-search stage (Postgres tsvector + RRF merge with vector search) was implemented as a candidate fix for queries on specific numeric facts. On the 64-question eval, hybrid produced no measurable lift over section-aware chunking alone. The diagnosis: natural-language Russian queries ("период полувыведения около 27 часов") rarely share enough exact tokens with stemmed chunks ("T1/2 — 20–30 ч") for BM25 to surface the right answer, while RRF still pulls ranking toward low-quality BM25 matches. Implementation preserved on the `hybrid-retrieval` branch.
+
+- **HyDE evaluated by simulation, not implemented.** Hypothetical Document Embeddings were tested by hand-simulating LLM-rewritten queries against the corpus. The hypothetical answers failed to surface correct chunks for reverse-lookup numeric queries, indicating the failure mode is not a phrasing gap (which HyDE addresses) but a rare-fact problem — specific numbers in a single chunk cannot compete in embedding space against the broader semantic neighborhood. The principled fix would be structured metadata extraction at ingest time (parsing "T1/2 — 27 ч" into a queryable numeric field), out of scope for this prototype.
+
+- **Contextual chunks (Anthropic-style) evaluated, no lift.** Generating per-chunk LLM context and embedding it alongside chunk text matched section-aware chunking but did not exceed it. Diagnosis: section-aware prefixes already encode most of what cheap contextualization would add. Implementation preserved on the `contextual-chunks` branch.
 
 ## Running it
 
@@ -153,22 +164,32 @@ Note: the first rerank-enabled run on a clean host will download the cross-encod
 ## Project structure
 
 ```
-.
-├── app.py                    # FastAPI service: /ask and /health
-├── ingest.py                 # Auto-discovers data/*.txt, chunks, embeds, stores in pgvector
-├── evaluate.py               # Runs the eval set against /ask
+├── app.py                       # FastAPI service: /ask, /ask/stream, /health
+├── ingest.py                    # Chunks, embeds, stores chunks + hypothetical questions
+├── hypotheticals.py             # Generates synthetic questions per chunk (used by ingest)
+├── evaluate.py                  # Runs the eval set against /ask
+├── hypothetical_questions.json  # Cached LLM-generated questions (committed for reproducibility)
 ├── scripts/
-│   └── search.py             # Script for inspecting retrieval
-├── data/         
-│   ├── drugs/                # 15 Russian drug instructions (.txt)
-│   ├── drug_questions.json   # Evaluation set
-│   └── sources.md            # Names and sources of the drugs
-├── Dockerfile                # App container definition
-├── docker-compose.yml        # Full stack: app + pgvector
-├── requirements.txt          # Direct Python dependencies
-├── .env.example              # Template for environment variables
+│   └── search.py                # Script for inspecting retrieval
+├── data/
+│   ├── drugs/                   # 15 Russian drug instructions (.txt)
+│   ├── drug_questions.json      # Evaluation set
+│   └── sources.md               # Names and sources of the drugs
+├── static/
+│   └── index.html               # Streaming frontend (vanilla HTML/CSS/JS)
+├── DEPLOY.md                    # Deployment runbook
+├── Dockerfile                   # App container definition
+├── docker-compose.yml           # Full stack: app + pgvector (+ Caddy in deployment)
+├── requirements.txt             # Direct Python dependencies
+├── .env.example                 # Template for environment variables
 └── README.md
 ```
+
+## Branches
+
+- `main` — production state (section-aware chunking + hypothetical questions)
+- `hybrid-retrieval` — BM25 hybrid retrieval, evaluated and rejected (see Known limitations)
+- `contextual-chunks` — Anthropic-style contextual chunks, evaluated and not adopted
 
 ## Tech stack
 
