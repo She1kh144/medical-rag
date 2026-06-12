@@ -152,7 +152,7 @@ for filepath, source_label in documents:
 
     _save_cache(cache)  # Save cache after processing each document, so we don't lose progress if interrupted
 
-    embeddings = model.encode([f"context: {chunk}" for chunk in prefixed_chunks])
+    embeddings = model.encode([f"passage: {chunk}" for chunk in prefixed_chunks])
 
     for chunk, embedding in zip(prefixed_chunks, embeddings):
         cur.execute(
