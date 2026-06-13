@@ -22,7 +22,6 @@ def evaluate_one(item, top_n=3):
     response = requests.post(
         API_URL,
         json={"query": item["question"], "rerank": False, "k": 10},
-        #timeout=60,
     )
     response.raise_for_status()
     data = response.json()
