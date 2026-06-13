@@ -11,7 +11,7 @@ client = OpenAI(
     base_url="https://api.deepseek.com",
 )
 
-CACHE_FILE = "hypothetical_questions.json"
+CACHE_FILE = "data/hypothetical_questions.json"
 
 def _load_cache():
     if os.path.exists(CACHE_FILE):
