@@ -18,3 +18,26 @@
 13) Ciprofloxacin (trimmed) -> [text](https://www.rlsnet.ru/drugs/ciprofloksacin-3442)
 14) Amoksiklav (trimmed) -> [text](https://www.rlsnet.ru/drugs/amoksiklav-200)
 15) Doxycycline -> [text](https://www.rlsnet.ru/drugs/doksiciklin-1262)
+
+## Cardiovascular 
+16) Enalapril -> [text](https://www.rlsnet.ru/drugs/enalapril-3723)
+17) Bisoprolol -> [text](https://www.rlsnet.ru/drugs/bisoprolol-35272)
+18) Amlodipine -> [text](https://www.rlsnet.ru/drugs/amlodipin-24511)
+19) Losartan -> [text](https://www.rlsnet.ru/drugs/lozartan-30163)
+20) Atorvastatin -> [text](https://www.rlsnet.ru/drugs/atorvastatin-33273)
+
+## Gastrointestinal
+21) Omeprazole -> [text](https://www.rlsnet.ru/drugs/omeprazol-1414)
+22) Zantac -> [text](https://www.rlsnet.ru/drugs/zantak-117)
+23) Motilium -> [text](https://www.rlsnet.ru/drugs/motilium-2058)
+24) Smecta -> [text](https://www.rlsnet.ru/drugs/smekta-2796)
+
+## Anxiolytics / sleep / mental health
+25) Aphobazolum -> [text](https://www.rlsnet.ru/drugs/afobazol-28413)
+26) Glycine -> [text](https://www.rlsnet.ru/drugs/glicin-997)
+27) Melatonin -> [text](https://www.rlsnet.ru/drugs/melatonin-51102)
+
+## Pain / cold / cough
+28) Theraflu -> [text](https://www.rlsnet.ru/drugs/teraflyu-31337)
+29) Acc -> [text](https://www.rlsnet.ru/drugs/acc-351)
+30) Ambrobene -> [text](https://www.rlsnet.ru/drugs/ambrobene-157)
