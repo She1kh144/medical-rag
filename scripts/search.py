@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 load_dotenv()
 
 # --- The question we're asking the knowledge base ---
-query = "что такое ибупрофен и как он работает?"
+query = "Можно ли принимать амлодипин при беременности?"
 
 # --- Embed the question (same model as ingestion) ---
 model = SentenceTransformer("intfloat/multilingual-e5-small")
@@ -27,7 +27,7 @@ cur.execute(
     SELECT source, chunk_text, embedding <=> %s::vector AS distance
     FROM chunks
     ORDER BY distance
-    LIMIT 3
+    LIMIT 10
     """,
     (query_embedding,),
 )
