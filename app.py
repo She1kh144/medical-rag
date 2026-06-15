@@ -101,7 +101,7 @@ def generate_answer(query: str, chunks: list):
     user_prompt = f"Контекст:\n{context}\n\nВопрос: {query}"
 
     response = client.chat.completions.create(
-        model="deepseek-chat",
+        model="deepseek-v4-flash",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -139,7 +139,7 @@ def generate_answer_stream(query: str, chunks: list):
     user_prompt = f"Контекст:\n{context}\n\nВопрос: {query}"
 
     stream = client.chat.completions.create(
-        model="deepseek-chat",
+        model="deepseek-v4-flash",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
