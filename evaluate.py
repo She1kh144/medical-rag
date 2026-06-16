@@ -1,5 +1,6 @@
 import json
 import requests
+from judge import judge_answer
 
 API_URL = "http://127.0.0.1:8000/ask"
 
@@ -28,9 +29,10 @@ def evaluate_one(item, top_n=3):
 
     answer = data["answer"]
     sources = data["sources"]
+    chunks_data = data["chunks"]
 
     # --- Retrieval check: is an expected source in the top N? ---
-    expected_sources = set(normalize_expected_source(item["expected_source"]))
+    expected_sources = set(normalize_expected_source(item["expected_sources"]))
     top_sources = {s["source"] for s in sources[:top_n]}
     retrieval_hit = bool(expected_sources & top_sources) if expected_sources else True
 
@@ -49,13 +51,33 @@ def evaluate_one(item, top_n=3):
 
     answer_hit = keyword_hit and source_in_answer
 
-    return {
+    result = {
         "question": item["question"],
         "retrieval_hit": retrieval_hit,
         "answer_hit": answer_hit,
         "answer": answer,
         "top_sources": [s["source"] for s in sources[:top_n]],
     }
+
+    # --- Extract the chunk text for the judge ---
+    retrieved_context = "\n\n".join(
+        f"[Источник: {chunk['source']}]\n{chunk['text']}"
+        for chunk in chunks_data
+    )
+    judge_result = judge_answer(
+        question=item["question"],
+        answer=answer,
+        retrieved_context=retrieved_context,
+        expected_sources=item["expected_sources"],
+        expected_keywords=item["expected_keywords"],
+    )
+
+    result["judge_correct"] = judge_result["correct"]
+    result["judge_faithful"] = judge_result["faithful"]
+    result["judge_refusal_appropriate"] = judge_result["refusal_appropriate"]
+    result["judge_reasoning"] = judge_result["reasoning"]
+
+    return result
 
 def main():
     with open("data/drug_questions.json", "r", encoding="utf-8") as file:
@@ -78,6 +100,17 @@ def main():
     print(f"\n{'='*50}")
     print(f"Retrieval accuracy: {retrieval_acc:.0%} ({sum(r['retrieval_hit'] for r in results)}/{n})")
     print(f"Answer accuracy:    {answer_acc:.0%} ({sum(r['answer_hit'] for r in results)}/{n})")
+    print(f"{'='*50}")
+
+    # --- Judge metrics ---
+    judge_correct_acc = sum(r["judge_correct"] for r in results) / n
+    judge_faithful_acc = sum(r["judge_faithful"] for r in results) / n
+    judge_refusal_acc = sum(r["judge_refusal_appropriate"] for r in results) / n
+
+    print(f"\n{'='*50}")
+    print(f"Judge correctness:  {judge_correct_acc:.0%} ({sum(r['judge_correct'] for r in results)}/{n})")
+    print(f"Judge faithfulness: {judge_faithful_acc:.0%} ({sum(r['judge_faithful'] for r in results)}/{n})")
+    print(f"Judge refusal:      {judge_refusal_acc:.0%} ({sum(r['judge_refusal_appropriate'] for r in results)}/{n})")
     print(f"{'='*50}")
 
     # --- Save detailed results for inspection ---
