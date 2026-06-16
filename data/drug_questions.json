@@ -1,322 +1,562 @@
 [
   {
     "question": "Через сколько минут после приёма натощак достигается Cmax ибупрофена в плазме?",
-    "expected_source": ["ibuprofen_rlsnet", "ибупрофен"],
+    "expected_sources": ["ibuprofen_rlsnet", "ибупрофен"],
     "expected_keywords": ["45 мин"]
   },
   {
     "question": "Какая максимальная суточная доза ибупрофена для взрослых?",
-    "expected_source": ["ibuprofen_rlsnet", "ибупрофен"],
+    "expected_sources": ["ibuprofen_rlsnet", "ибупрофен"],
     "expected_keywords": ["1200 мг", "6 таблеток"]
   },
   {
     "question": "С какого возраста можно принимать парацетамол в таблетках?",
-    "expected_source": ["paracetamol_rlsnet", "парацетамол"],
+    "expected_sources": ["paracetamol_rlsnet", "парацетамол"],
     "expected_keywords": ["определяется дозировкой", "до 3 лет", "до 6 лет"]
   },
   {
     "question": "До какого возраста строго противопоказан аспирин?",
-    "expected_source": ["aspirin_rlsnet", "аспирин"],
+    "expected_sources": ["aspirin_rlsnet", "аспирин"],
     "expected_keywords": ["15 лет", "синдром рейе"]
   },
   {
     "question": "Какая разовая доза кеторолака в таблетках?",
-    "expected_source": ["ketorol_rlsnet", "кеторол"],
+    "expected_sources": ["ketorol_rlsnet", "кеторол"],
     "expected_keywords": ["10 мг", "максимальная суточная 40 мг"]
   },
   {
     "question": "С какого возраста можно принимать нимесулид?",
-    "expected_source": ["nise_rlsnet", "найз"],
+    "expected_sources": ["nise_rlsnet", "найз"],
     "expected_keywords": ["12 лет", "подростков от 12"]
   },
   {
     "question": "Какая дозировка амоксициллина для взрослых?",
-    "expected_source": ["amoxicillin_rlsnet", "амоксициллин"],
+    "expected_sources": ["amoxicillin_rlsnet", "амоксициллин"],
     "expected_keywords": ["250-500 мг", "3 раза в сутки"]
   },
   {
     "question": "Какое действующее вещество относится к группе азалидов и обладает длительным периодом полувыведения?",
-    "expected_source": ["sumamed_rlsnet", "сумамед"],
+    "expected_sources": ["sumamed_rlsnet", "сумамед"],
     "expected_keywords": ["азитромицин", "2-4 дня"]
   },
   {
     "question": "Какое действующее вещество является селективным ингибитором ЦОГ-2 и применяется при остеоартрозе?",
-    "expected_source": ["nise_rlsnet", "найз"],
+    "expected_sources": ["nise_rlsnet", "найз"],
     "expected_keywords": ["нимесулид", "ЦОГ-2", "остеоартроз"]
   },
   {
     "question": "Какое действующее вещество является метаболитом лоратадина?",
-    "expected_source": ["aerius_rlsnet", "claritin_rlsnet", "эриус", "кларитин"],
+    "expected_sources": ["aerius_rlsnet", "claritin_rlsnet", "эриус", "кларитин"],
     "expected_keywords": ["дезлоратадин", "метаболит лоратадина"]
   },
   {
     "question": "Какое действующее вещество относится к тетрациклинам и накапливается в костной ткани?",
-    "expected_source": ["doxycycline_rlsnet", "доксициклин"],
+    "expected_sources": ["doxycycline_rlsnet", "доксициклин"],
     "expected_keywords": ["доксициклин", "тетрациклин", "костной ткани"]
   },
   {
     "question": "Какое действующее вещество является неселективным ингибитором ЦОГ и часто используется при головной боли?",
-    "expected_source": ["ibuprofen_rlsnet", "ибупрофен"],
+    "expected_sources": ["ibuprofen_rlsnet", "ибупрофен"],
     "expected_keywords": ["ибупрофен", "неселективный"]
   },
   {
     "question": "Какое действующее вещество в препарате Найз?",
-    "expected_source": ["nise_rlsnet", "найз"],
+    "expected_sources": ["nise_rlsnet", "найз"],
     "expected_keywords": ["нимесулид"]
   },
   {
     "question": "Какое действующее вещество содержит Зиртек?",
-    "expected_source": ["zyrtec_rlsnet", "зиртек"],
+    "expected_sources": ["zyrtec_rlsnet", "зиртек"],
     "expected_keywords": ["цетиризин"]
   },
   {
     "question": "Какой период полувыведения у дезлоратадина?",
-    "expected_source": ["aerius_rlsnet", "эриус"],
-    "expected_keywords": ["27 ч", "20-30 ч", "28 ч"]
+    "expected_sources": ["aerius_rlsnet", "эриус"],
+    "expected_keywords": ["27 ч", "20-30 ч"]
   },
   {
     "question": "Какой период полувыведения у доксициклина?",
-    "expected_source": ["doxycycline_rlsnet", "доксициклин"],
+    "expected_sources": ["doxycycline_rlsnet", "доксициклин"],
     "expected_keywords": ["16-24 ч"]
   },
   {
     "question": "С какого возраста можно принимать лоратадин?",
-    "expected_source": ["claritin_rlsnet", "кларитин"],
+    "expected_sources": ["claritin_rlsnet", "кларитин"],
     "expected_keywords": ["3 лет", "масса тела более 30 кг"]
   },
   {
     "question": "Какая разовая доза супрастина для взрослых?",
-    "expected_source": ["suprastin_rlsnet", "супрастин"],
+    "expected_sources": ["suprastin_rlsnet", "супрастин"],
     "expected_keywords": ["25 мг", "3-4 раза"]
   },
   {
     "question": "Какой период полувыведения у цетиризина?",
-    "expected_source": ["zyrtec_rlsnet", "зиртек"],
+    "expected_sources": ["zyrtec_rlsnet", "зиртек"],
     "expected_keywords": ["8-9 ч", "примерно 8"]
   },
   {
     "question": "Что принимать от аллергии и крапивницы?",
-    "expected_source": ["aerius_rlsnet", "claritin_rlsnet", "suprastin_rlsnet", "zyrtec_rlsnet", "clemastine_rlsnet", "эриус", "кларитин", "супрастин", "зиртек", "клемастин"],
+    "expected_sources": ["aerius_rlsnet", "claritin_rlsnet", "suprastin_rlsnet", "zyrtec_rlsnet", "clemastine_rlsnet", "эриус", "кларитин", "супрастин", "зиртек", "клемастин"],
     "expected_keywords": ["антигистаминн", "ринит", "крапивниц", "эриус", "зиртек", "кларитин", "супрастин", "клемастин"]
   },
   {
     "question": "Что принимать от боли в суставах и мышцах у взрослого?",
-    "expected_source": ["ibuprofen_rlsnet", "paracetamol_rlsnet", "aspirin_rlsnet", "ketorol_rlsnet", "nise_rlsnet", "ибупрофен", "парацетамол", "аспирин", "кеторол", "найз"],
+    "expected_sources": ["ibuprofen_rlsnet", "paracetamol_rlsnet", "aspirin_rlsnet", "ketorol_rlsnet", "nise_rlsnet", "ибупрофен", "парацетамол", "аспирин", "кеторол", "найз"],
     "expected_keywords": ["ибупрофен", "парацетамол", "аспирин", "кеторолак", "нимесулид", "боль в суставах"]
   },
   {
     "question": "Какой антибиотик принимать при инфекциях дыхательных путей?",
-    "expected_source": ["amoxicillin_rlsnet", "amoksiklav_rlsnet", "ciprofloxacin_rlsnet", "doxycycline_rlsnet", "sumamed_rlsnet", "амоксициллин", "амоксиклав", "ципрофлоксацин", "доксициклин", "сумамед"],
+    "expected_sources": ["amoxicillin_rlsnet", "amoksiklav_rlsnet", "ciprofloxacin_rlsnet", "doxycycline_rlsnet", "sumamed_rlsnet", "амоксициллин", "амоксиклав", "ципрофлоксацин", "доксициклин", "сумамед"],
     "expected_keywords": ["амоксициллин", "амоксиклав", "ципрофлоксацин", "доксициклин", "азитромицин", "дыхательных путей"]
   },
   {
     "question": "Что принимать от головной боли и температуры?",
-    "expected_source": ["paracetamol_rlsnet", "ibuprofen_rlsnet", "aspirin_rlsnet", "nise_rlsnet", "ketorol_rlsnet", "парацетамол", "ибупрофен", "аспирин", "найз", "кеторол"],
+    "expected_sources": ["paracetamol_rlsnet", "ibuprofen_rlsnet", "aspirin_rlsnet", "nise_rlsnet", "ketorol_rlsnet", "парацетамол", "ибупрофен", "аспирин", "найз", "кеторол"],
     "expected_keywords": ["парацетамол", "ибупрофен", "аспирин", "нимесулид", "жаропонижающее", "головная боль"]
   },
   {
     "question": "При каких заболеваниях ЖКТ противопоказан ибупрофен?",
-    "expected_source": ["ibuprofen_rlsnet", "ибупрофен"],
+    "expected_sources": ["ibuprofen_rlsnet", "ибупрофен"],
     "expected_keywords": ["эрозивно-язвен заболевания", "язвенная болезнь", "болезнь крона"]
   },
   {
-    "question": "У какого препарата период полувыведения около 27 часов?",
-    "expected_source": ["aerius_rlsnet", "эриус"],
-    "expected_keywords": ["дезлоратадин", "эриус", "27 ч"]
+    "question": "У какого препарата период полувыведения около 27-28 часов?",
+    "expected_sources": ["aerius_rlsnet", "claritin_rlsnet", "эриус", "кларитин"],
+    "expected_keywords": ["дезлоратадин"]
   },
   {
     "question": "У какого препарата терапевтическая концентрация в тканях сохраняется до 5-7 дней после приёма последней дозы?",
-    "expected_source": ["sumamed_rlsnet", "сумамед"],
+    "expected_sources": ["sumamed_rlsnet", "сумамед"],
     "expected_keywords": ["сумамед", "5-7 дней", "последней дозы"]
   },
   {
     "question": "У какого препарата при клиренсе креатинина менее или равен 15 мл/мин период полувыведения увеличивается до 8,5 часов?",
-    "expected_source": ["amoxicillin_rlsnet", "амоксициллин"],
+    "expected_sources": ["amoxicillin_rlsnet", "амоксициллин"],
     "expected_keywords": ["амоксициллин", "8,5 ч", "менее или равен 15 мл/мин"]
   },
   {
     "question": "У какого препарата связь с белками плазмы крови составляет 99%?",
-    "expected_source": ["ketorol_rlsnet", "кеторол"],
+    "expected_sources": ["ketorol_rlsnet", "кеторол"],
     "expected_keywords": ["кеторол", "99%"]
   },
   {
     "question": "У какого препарата при тяжёлой хронической почечной недостаточности почками выводится только 1-5% принятой дозы?",
-    "expected_source": ["doxycycline_rlsnet", "доксициклин"],
+    "expected_sources": ["doxycycline_rlsnet", "доксициклин"],
     "expected_keywords": [ "доксициклин", "1-5%", "тяжёлой хронической почечной недостаточности"]
   },
   {
     "question": "У какого препарата время достижения максимальной концентрации после приёма внутрь составляет 1,5-2,5 часа?",
-    "expected_source": ["nise_rlsnet", "найз"],
+    "expected_sources": ["nise_rlsnet", "найз"],
     "expected_keywords": ["1,5-2,5 ч", "Tmax", "нимесулид", "найз"]
   },
   {
     "question": "У какого препарата период полувыведения составляет 16-24 часа?",
-    "expected_source": ["doxycycline_rlsnet", "доксициклин"],
+    "expected_sources": ["doxycycline_rlsnet", "доксициклин"],
     "expected_keywords": ["доксициклин"]
   },
   {
     "question": "У какого препарата период полувыведения в среднем 5,3 часа?",
-    "expected_source": ["ketorol_rlsnet", "кеторол"],
+    "expected_sources": ["ketorol_rlsnet", "кеторол"],
     "expected_keywords": ["кеторол", "кеторолак"]
   },
   {
     "question": "У какого препарата период полувыведения 3-6 часов?",
-    "expected_source": ["nise_rlsnet", "найз"],
+    "expected_sources": ["nise_rlsnet", "найз"],
     "expected_keywords": ["найз", "нимесулид"]
   },
   {
     "question": "У какого препарата период полувыведения составляет 2-4 дня?",
-    "expected_source": ["sumamed_rlsnet", "сумамед"],
+    "expected_sources": ["sumamed_rlsnet", "сумамед"],
     "expected_keywords": ["сумамед", "азитромицин"]
   },
   {
     "question": "У какого препарата период полувыведения лоратадина в среднем составляет 8,4 часа?",
-    "expected_source": ["claritin_rlsnet", "кларитин"],
+    "expected_sources": ["claritin_rlsnet", "кларитин"],
     "expected_keywords": ["кларитин", "лоратадин"]
   },
   {
     "question": "При одновременном применении с какими препаратами значительно повышается риск желудочно-кишечного кровотечения у ибупрофена?",
-    "expected_source": ["ibuprofen_rlsnet", "ибупрофен"],
+    "expected_sources": ["ibuprofen_rlsnet", "ибупрофен"],
     "expected_keywords": ["антикоагулянт", "ГКС", "СИОЗС", "антиагрегант", "кровотечени"]
   },
   {
     "question": "Какие симптомы характерны для тяжёлой передозировки парацетамола?",
-    "expected_source": ["paracetamol_rlsnet", "парацетамол"],
+    "expected_sources": ["paracetamol_rlsnet", "парацетамол"],
     "expected_keywords": ["печеночн", "некроз печени", "метаболический ацидоз", "энцефалопати"]
   },
   {
     "question": "Что происходит при одновременном применении кеторолака с другими НПВС?",
-    "expected_source": ["ketorol_rlsnet", "кеторол"],
+    "expected_sources": ["ketorol_rlsnet", "кеторол"],
     "expected_keywords": ["кровотечени", "задержка жидкости", "язв"]
   },
   {
     "question": "Почему нимесулид противопоказан во время беременности?",
-    "expected_source": ["nise_rlsnet", "найз"],
+    "expected_sources": ["nise_rlsnet", "найз"],
     "expected_keywords": ["артериальн", "маловодие", "нарушение функции почек"]
   },
   {
     "question": "При дефиците какого фермента аспирин противопоказан?",
-    "expected_source": ["aspirin_rlsnet", "аспирин"],
+    "expected_sources": ["aspirin_rlsnet", "аспирин"],
     "expected_keywords": ["глюкозо-6-фосфатдегидрогеназы", "g6pd"]
   },
   {
     "question": "Какой препарат противопоказан при инфекционном мононуклеозе?",
-    "expected_source": ["amoxicillin_rlsnet", "amoksiklav_rlsnet", "амоксициллин", "амоксиклав"],
+    "expected_sources": ["amoxicillin_rlsnet", "amoksiklav_rlsnet", "амоксициллин", "амоксиклав"],
     "expected_keywords": ["инфекционный мононуклеоз", "амоксициллин"]
   },
   {
     "question": "С какими препаратами кеторолак повышает риск кровотечения?",
-    "expected_source": ["ketorol_rlsnet", "кеторол"],
+    "expected_sources": ["ketorol_rlsnet", "кеторол"],
     "expected_keywords": ["антикоагулянты", "варфарин", "гепарин", "НПВС", "ацетилсалициловая кислота"]
   },
   {
     "question": "Что рекомендуется делать при передозировке доксициклина?",
-    "expected_source": ["doxycycline_rlsnet", "доксициклин"],
+    "expected_sources": ["doxycycline_rlsnet", "доксициклин"],
     "expected_keywords": ["промывание желудка", "активированный уголь", "антациды", "сульфат магния", "гемодиализ неэффективен"]
   },
   {
     "question": "Разрешен ли ибупрофен в I-II триместре беременности?",
-    "expected_source": ["ibuprofen_rlsnet", "ибупрофен"],
+    "expected_sources": ["ibuprofen_rlsnet", "ибупрофен"],
     "expected_keywords": ["избегать", "проконсультироваться с врачом"]
   },
   {
     "question": "Можно ли применять цетиризин во время беременности?",
-    "expected_source": ["zyrtec_rlsnet", "зиртек"],
+    "expected_sources": ["zyrtec_rlsnet", "зиртек"],
     "expected_keywords": ["не следует", "исследований", "не проводилось"]
   },
   {
     "question": "Что рекомендуется делать при необходимости применения доксициклина в период лактации?",
-    "expected_source": ["doxycycline_rlsnet", "доксициклин"],
+    "expected_sources": ["doxycycline_rlsnet", "доксициклин"],
     "expected_keywords": ["противопоказано", "прекратить"]
   },
   {
     "question": "При каких состояниях суточная доза парацетамола ограничивается 3 г?",
-    "expected_source": ["paracetamol_rlsnet", "парацетамол"],
+    "expected_sources": ["paracetamol_rlsnet", "парацетамол"],
     "expected_keywords": ["хронические заболевания печени", "печеноч", "алкоголизм"]
   },
   {
     "question": "Какая максимальная суточная доза амоксиклава для взрослых?",
-    "expected_source": ["amoksiklav_rlsnet", "амоксиклав"],
+    "expected_sources": ["amoksiklav_rlsnet", "амоксиклав"],
     "expected_keywords": ["1500 мг", "максимальная суточная"]
   },
   {
     "question": "С какого возраста можно принимать ципрофлоксацин?",
-    "expected_source": ["ciprofloxacin_rlsnet", "ципрофлоксацин"],
+    "expected_sources": ["ciprofloxacin_rlsnet", "ципрофлоксацин"],
     "expected_keywords": ["с 1 года", "педиатрическ"]
   },
   {
     "question": "При каких заболеваниях противопоказан доксициклин до 8 лет?",
-    "expected_source": ["doxycycline_rlsnet", "доксициклин"],
+    "expected_sources": ["doxycycline_rlsnet", "доксициклин"],
     "expected_keywords": ["до 8 лет", "кальци", "нерастворим"]
   },
   {
     "question": "Какая дозировка азитромицина для детей старше 12 лет или с массой тела более 45 кг?",
-    "expected_source": ["sumamed_rlsnet", "сумамед"],
+    "expected_sources": ["sumamed_rlsnet", "сумамед"],
     "expected_keywords": ["500 мг", "1 раз в сутки", "3 дня"]
   },
   {
     "question": "Что принимать от зуда и сыпи при аллергии?",
-    "expected_source": ["aerius_rlsnet", "claritin_rlsnet", "suprastin_rlsnet", "zyrtec_rlsnet", "clemastine_rlsnet", "эриус", "кларитин", "супрастин", "зиртек", "клемастин"],
+    "expected_sources": ["aerius_rlsnet", "claritin_rlsnet", "suprastin_rlsnet", "zyrtec_rlsnet", "clemastine_rlsnet", "эриус", "кларитин", "супрастин", "зиртек", "клемастин"],
     "expected_keywords": ["эриус", "кларитин", "крапивница", "антигистамин"]
   },
   {
     "question": "Какой НПВС лучше при воспалении суставов?",
-    "expected_source": ["ibuprofen_rlsnet", "nise_rlsnet", "ketorol_rlsnet", "aspirin_rlsnet", "ибупрофен", "найз", "кеторол", "аспирин"],
+    "expected_sources": ["ibuprofen_rlsnet", "nise_rlsnet", "ketorol_rlsnet", "aspirin_rlsnet", "ибупрофен", "найз", "кеторол", "аспирин"],
     "expected_keywords": ["ибупрофен", "нимесулид", "кеторолак", "аспирин", "противовоспалительное"]
   },
   {
     "question": "При каких состояниях противопоказан клемастин?",
-    "expected_source": ["clemastine_rlsnet", "клемастин"],
+    "expected_sources": ["clemastine_rlsnet", "клемастин"],
     "expected_keywords": ["бронхиальн", "1 года", "мао"]
   },
   {
     "question": "Какая дозировка цетиризина для взрослых?",
-    "expected_source": ["zyrtec_rlsnet", "зиртек"],
+    "expected_sources": ["zyrtec_rlsnet", "зиртек"],
     "expected_keywords": ["5 до 10 мг", "5-10 мг", "1 раз в сутки", "20 мг"]
   },
   {
     "question": "В какой лекарственной форме и с каким ароматизатором выпускается сумамед?",
-    "expected_source": ["sumamed_rlsnet", "сумамед"],
+    "expected_sources": ["sumamed_rlsnet", "сумамед"],
     "expected_keywords": ["порошок", "банан", "клубни", "малин"]
   },
   {
     "question": "При какой температуре следует хранить таблетки Кларитина?",
-    "expected_source": ["claritin_rlsnet", "кларитин"],
+    "expected_sources": ["claritin_rlsnet", "кларитин"],
     "expected_keywords": ["не выше 25", "защищенном от света месте"]
   },  
   {
     "question": "При какой температуре следует хранить таблетки ибупрофена?",
-    "expected_source": ["ibuprofen_rlsnet", "ибупрофен"],
+    "expected_sources": ["ibuprofen_rlsnet", "ибупрофен"],
     "expected_keywords": ["не выше 25", "защищенном от света месте"]
   },
   {
     "question": "Какая дозировка ибупрофена для собаки?",
-    "expected_source": [],
+    "expected_sources": [],
     "expected_keywords": ["нет данных", "нет информации", "нет ответа", "не указано", "не содержит"]
   },
   {
     "question": "Что такое инсулин и как его применять?",
-    "expected_source": [],
+    "expected_sources": [],
     "expected_keywords": ["нет данных", "не указано", "нет информации", "нет ответа", "не содержит"]
   },
   {
     "question": "Что такое механизм действия метформина?",
-    "expected_source": [],
+    "expected_sources": [],
     "expected_keywords": ["нет данных", "нет информации", "нет ответа", "не указано", "не содержит"]
   },
   {
     "question": "Можно ли применять доксициклин для лечения инфекций у кошек и собак?",
-    "expected_source": [],
+    "expected_sources": [],
     "expected_keywords": ["нет данных", "нет информации", "нет ответа", "не указано", "не содержит"]
   },
   {
     "question": "Какая дозировка ибупрофена рекомендуется при лечении остеоартроза у детей 5 лет?",
-    "expected_source": [],
+    "expected_sources": [],
     "expected_keywords": ["нет данных", "нет информации", "нет ответа", "не указано", "не содержит"]
   },
   {
     "question": "Как влияет нимесулид на уровень глюкозы в крови у пациентов с сахарным диабетом?",
-    "expected_source": [],
+    "expected_sources": [],
+    "expected_keywords": ["нет данных", "нет информации", "нет ответа", "не указано", "не содержит"]
+  },
+  {
+    "question": "Какая начальная доза эналаприла при гипертензии?",
+    "expected_sources": ["enalapril_rlsnet", "эналаприл"],
+    "expected_keywords": ["10-20 мг", "1 раз в сутки", "начальная доза"]
+  },
+  {
+    "question": "С какого возраста можно принимать эналаприл?",
+    "expected_sources": ["enalapril_rlsnet", "эналаприл"],
+    "expected_keywords": ["до 18 лет", "эффективность и безопасность не изучены", "противопоказан"]
+  },
+  {
+    "question": "Какая обычная доза бисопролола при гипертензии?",
+    "expected_sources": ["bisoprolol_rlsnet", "бисопролол"],
+    "expected_keywords": ["5 мг", "1 раз в сутки", "начальная доза", "максимальная 20 мг"]
+  },
+  {
+    "question": "При каких состояниях бисопролол противопоказан?",
+    "expected_sources": ["bisoprolol_rlsnet", "бисопролол"],
+    "expected_keywords": ["острая сердечная недостаточность", "кардиогенный шок", "AV блокада II и III степени", "выраженная брадикардия"]
+  },
+  {
+    "question": "Какая максимальная суточная доза амлодипина?",
+    "expected_sources": ["amlodipine_rlsnet", "амлодипин"],
+    "expected_keywords": ["10 мг", "максимальная суточная доза"]
+  },
+  {
+    "question": "Можно ли принимать амлодипин при беременности?",
+    "expected_sources": ["amlodipine_rlsnet", "амлодипин"],
+    "expected_keywords": ["с осторожностью", "превышает риск", "только в случае"]
+  },
+  {
+    "question": "Какая начальная доза лозартана?",
+    "expected_sources": ["losartan_rlsnet", "лозартан"],
+    "expected_keywords": ["50 мг", "1 раз в сутки", "начальная доза"]
+  },
+  {
+    "question": "Какие побочные эффекты у лозартана?",
+    "expected_sources": ["losartan_rlsnet", "лозартан"],
+    "expected_keywords": ["головокружение", "гиперкалиемия", "ангионевротический отек"]
+  },
+  {
+    "question": "Какая обычная доза аторвастатина?",
+    "expected_sources": ["atorvastatin_rlsnet", "аторвастатин"],
+    "expected_keywords": ["10 мг", "1 раз в сутки", "10-80 мг"]
+  },
+  {
+    "question": "При каких заболеваниях печени противопоказан аторвастатин?",
+    "expected_sources": ["atorvastatin_rlsnet", "аторвастатин"],
+    "expected_keywords": ["активные заболевания печени", "повышение активности печеночных ферментов", "противопоказан"]
+  },
+  {
+    "question": "Какая дозировка омепразола при язвенной болезни?",
+    "expected_sources": ["omeprazole_rlsnet", "омепразол"],
+    "expected_keywords": ["20 мг", "1 раз в сутки", "4-8 недель"]
+  },
+  {
+    "question": "С какого возраста можно принимать омепразол?",
+    "expected_sources": ["omeprazole_rlsnet", "омепразол"],
+    "expected_keywords": ["детский возраст", "эффективность и безопасность не установлены", "противопоказан"]
+  },
+  {
+    "question": "Какая дозировка ранитидина (Зантак) для взрослых?",
+    "expected_sources": ["zantac_rlsnet", "зантак"],
+    "expected_keywords": ["150 мг", "2 раза в сутки", "300 мг", "1 раз в сутки на ночь"]
+  },
+  {
+    "question": "При каких состояниях противопоказан ранитидин?",
+    "expected_sources": ["zantac_rlsnet", "ранитидин"],
+    "expected_keywords": ["гиперчувствительност", "беременност", "лактаци", "до 12 лет"]
+  },
+  {
+    "question": "Как принимать Мотилиум?",
+    "expected_sources": ["motilium_rlsnet", "мотилиум"],
+    "expected_keywords": ["перорально", "минимальн"]
+  },
+  {
+    "question": "С какого возраста можно принимать Мотилиум?",
+    "expected_sources": ["motilium_rlsnet", "мотилиум"],
+    "expected_keywords": ["дет", "не установлены", "не следует"]
+  },
+  {
+    "question": "Как принимать Смекту при диарее?",
+    "expected_sources": ["smecta_rlsnet", "смекта"],
+    "expected_keywords": ["3 пакетика в сутки", "взрослые", "7 дней"]
+  },
+  {
+    "question": "Можно ли давать Смекту детям?",
+    "expected_sources": ["smecta_rlsnet", "смекта"],
+    "expected_keywords": ["старше 2 лет", "2 пакетика в сутки", "дети старше 2 лет"]
+  },
+  {
+    "question": "Какая дозировка Афобазола для взрослых?",
+    "expected_sources": ["aphobazolum_rlsnet", "афобазол"],
+    "expected_keywords": ["10 мг", "3 раза в сутки", "30 мг в сутки"]
+  },
+  {
+    "question": "При каких состояниях противопоказан Афобазол?",
+    "expected_sources": ["aphobazolum_rlsnet", "афобазол"],
+    "expected_keywords": ["повышенная чувствительность", "беременность", "лактация", "детский возраст до 18 лет"]
+  },
+  {
+    "question": "Какая обычная доза глицина?",
+    "expected_sources": ["glycine_rlsnet", "глицин"],
+    "expected_keywords": ["1 таблетка", "2-3 раза в сутки", "100 мг"]
+  },
+  {
+    "question": "Можно ли давать глицин детям?",
+    "expected_sources": ["glycine_rlsnet", "глицин"],
+    "expected_keywords": ["детям", "подросткам", "можно"]
+  },
+  {
+    "question": "Какая дозировка у мелатонина?",
+    "expected_sources": ["melatonin_rlsnet", "мелатонин"],
+    "expected_keywords": ["2 мг", "за 1-2 часа до сна"]
+  },
+  {
+    "question": "С какого возраста можно принимать мелатонин?",
+    "expected_sources": ["melatonin_rlsnet", "мелатонин"],
+    "expected_keywords": ["55 лет и старше", "первичная бессонница"]
+  },
+  {
+    "question": "Какие действующие вещества в Терафлю?",
+    "expected_sources": ["theraflu_rlsnet", "терафлю"],
+    "expected_keywords": ["парацетамол", "фенилэфрин", "фенирамин"]
+  },
+  {
+    "question": "С какого возраста можно принимать Терафлю?",
+    "expected_sources": ["theraflu_rlsnet", "терафлю"],
+    "expected_keywords": ["12 лет и старше", "дети 12 лет и старше"]
+  },
+  {
+    "question": "Какая дозировка АЦЦ для взрослых?",
+    "expected_sources": ["acc_rlsnet", "ацц"],
+    "expected_keywords": ["400-600 мг", "в сутки", "2-3 раза"]
+  },
+  {
+    "question": "Можно ли давать АЦЦ детям?",
+    "expected_sources": ["acc_rlsnet", "ацц"],
+    "expected_keywords": ["от 2 лет", "дети от 2 до 6 лет", "можно"]
+  },
+  {
+    "question": "Какая дозировка Амбробене (амброксол)?",
+    "expected_sources": ["ambrobene_rlsnet", "амбробене"],
+    "expected_keywords": ["30 мг", "3 раза в сутки", "взрослым"]
+  },
+  {
+    "question": "С какого возраста можно принимать амброксол?",
+    "expected_sources": ["ambrobene_rlsnet", "амброксол"],
+    "expected_keywords": ["с рождения", "до 2 лет"]
+  },
+  {
+    "question": "Какой препарат относится к группе ингибиторов АПФ?",
+    "expected_sources": ["enalapril_rlsnet", "эналаприл"],
+    "expected_keywords": ["эналаприл", "ингибитор АПФ"]
+  },
+  {
+    "question": "Какой бета-адреноблокатор применяется при гипертензии?",
+    "expected_sources": ["bisoprolol_rlsnet", "бисопролол"],
+    "expected_keywords": ["бисопролол", "бета-адреноблокатор"]
+  },
+  {
+    "question": "Какой препарат является блокатором кальциевых каналов?",
+    "expected_sources": ["amlodipine_rlsnet", "амлодипин"],
+    "expected_keywords": ["амлодипин", "блокатор кальциевых каналов"]
+  },
+  {
+    "question": "Какой препарат относится к группе блокаторов рецепторов ангиотензина II?",
+    "expected_sources": ["losartan_rlsnet", "лозартан"],
+    "expected_keywords": ["лозартан", "блокатор рецепторов ангиотензина II"]
+  },
+  {
+    "question": "Какой статин снижает уровень холестерина?",
+    "expected_sources": ["atorvastatin_rlsnet", "аторвастатин"],
+    "expected_keywords": ["аторвастатин", "статин"]
+  },
+  {
+    "question": "Какой препарат при хронической сердечной недостаточности снижает постнагрузку и при этом может уменьшать компенсаторную тахикардию?",
+    "expected_sources": ["enalapril_rlsnet", "эналаприл"],
+    "expected_keywords": ["эналаприл"]
+  },
+  {
+    "question": "Какой препарат применяется и при изжоге, и при язвенной болезни — относится к группе ингибиторов протонной помпы?",
+    "expected_sources": ["omeprazole_rlsnet", "омепразол"],
+    "expected_keywords": ["омепразол", "ингибитор протонной помпы", "изжога", "язвенная болезнь"]
+  },
+  {
+    "question": "Какой препарат при тошноте и рвоте применяется и улучшает моторику ЖКТ?",
+    "expected_sources": ["motilium_rlsnet", "мотилиум"],
+    "expected_keywords": ["домперидон", "мотилиум", "тошнота", "рвота", "моторика ЖКТ"]
+  },
+  {
+    "question": "Какой антибиотик группы макролидов имеет короткий курс приёма?",
+    "expected_sources": ["sumamed_rlsnet", "сумамед"],
+    "expected_keywords": ["азитромицин", "сумамед", "3 дня", "короткий курс"]
+  },
+  {
+    "question": "Какая дозировка эналаприла для взрослых?",
+    "expected_sources": ["enalapril_rlsnet", "эналаприл"],
+    "expected_keywords": ["10-20 мг", "1 раз в сутки"]
+  },
+  {
+    "question": "Какая дозировка омепразола для взрослых?",
+    "expected_sources": ["omeprazole_rlsnet", "омепразол"],
+    "expected_keywords": ["20 мг", "1 раз в сутки"]
+  },
+  {
+    "question": "Какая дозировка лозартана для взрослых?",
+    "expected_sources": ["losartan_rlsnet", "лозартан"],
+    "expected_keywords": ["50 мг", "1 раз в сутки"]
+  },
+  {
+    "question": "Какая дозировка аторвастатина для взрослых?",
+    "expected_sources": ["atorvastatin_rlsnet", "аторвастатин"],
+    "expected_keywords": ["10 мг", "1 раз в сутки", "10-80 мг"]
+  },
+  {
+    "question": "Сколько парацетамола содержится в одном пакетике Терафлю?",
+    "expected_sources": ["theraflu_rlsnet", "терафлю"],
+    "expected_keywords": ["325 мг", "парацетамол"]
+  },
+  {
+    "question": "Можно ли совмещать Терафлю с другими препаратами, содержащими парацетамол?",
+    "expected_sources": ["theraflu_rlsnet", "терафлю"],
+    "expected_keywords": ["не рекомендуется", "риск передозировки", "парацетамол"]
+  },
+  {
+    "question": "Какая дозировка метформина для диабета 2 типа?",
+    "expected_sources": [],
+    "expected_keywords": ["нет данных", "нет информации", "нет ответа", "не указано", "не содержит"]
+  },
+  {
+    "question": "Можно ли принимать варфарин при беременности?",
+    "expected_sources": [],
+    "expected_keywords": ["нет данных", "нет информации", "нет ответа", "не указано", "не содержит"]
+  },
+  {
+    "question": "Как лечить депрессию антидепрессантами?",
+    "expected_sources": [],
     "expected_keywords": ["нет данных", "нет информации", "нет ответа", "не указано", "не содержит"]
   }
 ]
