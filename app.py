@@ -13,9 +13,34 @@ load_dotenv()
 # --- Load model and client ONCE at startup, not per request ---
 embed_model = SentenceTransformer("intfloat/multilingual-e5-small")
 _rerank_model = None  # Lazy-loaded when needed
+
 client = OpenAI(
     api_key=os.environ.get("DEEPSEEK_API_KEY"),
     base_url="https://api.deepseek.com",
+)
+
+system_prompt = (
+    "Ты — помощник, отвечающий на вопросы о лекарствах СТРОГО на основе "
+    "предоставленного контекста. Используй ТОЛЬКО информацию из контекста ниже.\n\n"
+
+    "ВАЖНЫЕ ПРАВИЛА ЧТЕНИЯ КОНТЕКСТА:\n"
+    "1. Если в контексте есть информация, релевантная вопросу — отвечай на основе этой "
+    "информации, даже если она неполная или относится к частному случаю. Лучше дать частичный "
+    "ответ с указанием того, что именно есть в контексте, чем отказать.\n"
+    "2. Если вопрос касается общего случая (например, 'доза для взрослых'), "
+    "ищи в контексте основные/обычные рекомендации, которые обычно идут в начале "
+    "соответствующих разделов. Не отвечай 'не указано' только потому, что в контексте "
+    "есть много специальных случаев.\n"
+    "3. Если вопрос про класс препаратов или сравнение (например, 'какой антибиотик группы X' "
+    "или 'какой НПВС лучше'), и в контексте есть препарат(ы) из этого класса — "
+    "назови его(их) и опиши на основе контекста.\n"
+    "4. Отвечай 'В предоставленных документах нет ответа на этот вопрос' ТОЛЬКО если "
+    "в контексте действительно НЕТ информации, имеющей отношение к вопросу. "
+    "Не отказывай только потому, что ответ требует синтеза или интерпретации.\n\n"
+
+    "Не придумывай информацию, отсутствующую в контексте. "
+    "В конце ответа укажи источник из предоставленного контекста (не придумывай источники). "
+    "Всегда добавляй: 'Это не медицинская консультация, обратитесь к врачу.'"
 )
 
 app = FastAPI(title="Medical RAG")
@@ -80,29 +105,6 @@ def generate_answer(query: str, chunks: list):
         f"[Источник: {source}]\n{text}"
         for text, source, distance in chunks
     )
-    system_prompt = (
-        "Ты — помощник, отвечающий на вопросы о лекарствах СТРОГО на основе "
-        "предоставленного контекста. Используй ТОЛЬКО информацию из контекста ниже.\n\n"
-
-        "ВАЖНЫЕ ПРАВИЛА ЧТЕНИЯ КОНТЕКСТА:\n"
-        "1. Если в контексте есть информация, релевантная вопросу — отвечай на основе этой "
-        "информации, даже если она неполная или относится к частному случаю. Лучше дать частичный "
-        "ответ с указанием того, что именно есть в контексте, чем отказать.\n"
-        "2. Если вопрос касается общего случая (например, 'доза для взрослых'), "
-        "ищи в контексте основные/обычные рекомендации, которые обычно идут в начале "
-        "соответствующих разделов. Не отвечай 'не указано' только потому, что в контексте "
-        "есть много специальных случаев.\n"
-        "3. Если вопрос про класс препаратов или сравнение (например, 'какой антибиотик группы X' "
-        "или 'какой НПВС лучше'), и в контексте есть препарат(ы) из этого класса — "
-        "назови его(их) и опиши на основе контекста.\n"
-        "4. Отвечай 'В предоставленных документах нет ответа на этот вопрос' ТОЛЬКО если "
-        "в контексте действительно НЕТ информации, имеющей отношение к вопросу. "
-        "Не отказывай только потому, что ответ требует синтеза или интерпретации.\n\n"
-
-        "Не придумывай информацию, отсутствующую в контексте. "
-        "В конце ответа укажи источник из предоставленного контекста (не придумывай источники). "
-        "Всегда добавляй: 'Это не медицинская консультация, обратитесь к врачу.'"
-    )
     user_prompt = f"Контекст:\n{context}\n\nВопрос: {query}"
 
     response = client.chat.completions.create(
@@ -121,29 +123,6 @@ def generate_answer_stream(query: str, chunks: list):
     context = "\n\n".join(
         f"[Источник: {source}]\n{text}"
         for text, source, distance in chunks
-    )
-    system_prompt = (
-        "Ты — помощник, отвечающий на вопросы о лекарствах СТРОГО на основе "
-        "предоставленного контекста. Используй ТОЛЬКО информацию из контекста ниже.\n\n"
-
-        "ВАЖНЫЕ ПРАВИЛА ЧТЕНИЯ КОНТЕКСТА:\n"
-        "1. Если в контексте есть информация, релевантная вопросу — отвечай на основе этой "
-        "информации, даже если она неполная или относится к частному случаю. Лучше дать частичный "
-        "ответ с указанием того, что именно есть в контексте, чем отказать.\n"
-        "2. Если вопрос касается общего случая (например, 'доза для взрослых'), "
-        "ищи в контексте основные/обычные рекомендации, которые обычно идут в начале "
-        "соответствующих разделов. Не отвечай 'не указано' только потому, что в контексте "
-        "есть много специальных случаев.\n"
-        "3. Если вопрос про класс препаратов или сравнение (например, 'какой антибиотик группы X' "
-        "или 'какой НПВС лучше'), и в контексте есть препарат(ы) из этого класса — "
-        "назови его(их) и опиши на основе контекста.\n"
-        "4. Отвечай 'В предоставленных документах нет ответа на этот вопрос' ТОЛЬКО если "
-        "в контексте действительно НЕТ информации, имеющей отношение к вопросу. "
-        "Не отказывай только потому, что ответ требует синтеза или интерпретации.\n\n"
-
-        "Не придумывай информацию, отсутствующую в контексте. "
-        "В конце ответа укажи источник из предоставленного контекста (не придумывай источники). "
-        "Всегда добавляй: 'Это не медицинская консультация, обратитесь к врачу.'"
     )
     user_prompt = f"Контекст:\n{context}\n\nВопрос: {query}"
 
@@ -170,6 +149,20 @@ def serve_index():
 def health():
     return {"status": "ok"}
 
+@app.get("/search")
+def search(query: str, k: int = 10):
+    try:
+        chunks = retrieve(query, k)
+
+        chunks_data = [
+            {"text": text, "source": src, "distance": float(distance)}
+            for text, src, distance in chunks
+        ]
+
+        return {"chunks": chunks_data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 @app.post("/ask", response_model=Answer)
 def ask(question: Question):
     try:
@@ -195,6 +188,7 @@ def ask(question: Question):
             {"source": src, "distance": float(dist)}
             for _, src, dist in chunks
         ]
+        
         return Answer(answer=answer_text or "", sources=sources, chunks=chunks_data)
     except HTTPException:
         raise
@@ -203,28 +197,33 @@ def ask(question: Question):
     
 @app.post("/ask/stream")
 def ask_stream(question: Question):
-    candidates = retrieve(question.query, k=50 if question.rerank else question.k)
+    try:
+        candidates = retrieve(question.query, k=50 if question.rerank else question.k)
 
-    if not candidates:
-        raise HTTPException(status_code=404, detail="No chunks found")
+        if not candidates:
+            raise HTTPException(status_code=404, detail="No chunks found")
 
-    if question.rerank:
-        chunks = rerank(question.query, candidates, top_k=10)
-    else:
-        chunks = candidates[:question.k]
+        if question.rerank:
+            chunks = rerank(question.query, candidates, top_k=10)
+        else:
+            chunks = candidates[:question.k]
 
-    def event_stream():
-        # First, send the sources as a structured event
-        sources = [{"source": src, "distance": float(dist)} for _, src, dist in chunks]
-        yield f"event: sources\ndata: {json.dumps(sources)}\n\n"
+        def event_stream():
+            # First, send the sources as a structured event
+            sources = [{"source": src, "distance": float(dist)} for _, src, dist in chunks]
+            yield f"event: sources\ndata: {json.dumps(sources)}\n\n"
 
-        # Then stream the answer text
-        for token in generate_answer_stream(question.query, chunks):
-            # SSE format: data: <content>\n\n
-            # Replace newlines in content to avoid breaking the SSE framing
-            safe_token = token.replace("\n", "\\n")
-            yield f"event: token\ndata: {safe_token}\n\n"
+            # Then stream the answer text
+            for token in generate_answer_stream(question.query, chunks):
+                # SSE format: data: <content>\n\n
+                # Replace newlines in content to avoid breaking the SSE framing
+                safe_token = token.replace("\n", "\\n")
+                yield f"event: token\ndata: {safe_token}\n\n"
 
-        yield "event: done\ndata: \n\n"
+            yield "event: done\ndata: \n\n"
 
-    return StreamingResponse(event_stream(), media_type="text/event-stream")
+        return StreamingResponse(event_stream(), media_type="text/event-stream")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
