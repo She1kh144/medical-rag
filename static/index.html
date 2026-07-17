@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <style>
     /* === Color variables === */
     :root {
@@ -374,6 +375,26 @@
     let accumulatedAnswer = '';
     let firstTokenReceived = false;
 
+    function renderMarkdown(markdown) {
+      const renderedHtml = marked.parse(markdown);
+      return DOMPurify.sanitize(renderedHtml);
+    }
+
+    function renderSources(sources) {
+      const uniqueSources = [
+        ...new Set(sources.map(source => source.source))
+      ];
+
+      const sourceTags = uniqueSources.map((source) => {
+        const tag = document.createElement('span');
+        tag.className = 'source-tag';
+        tag.textContent = source;
+        return tag;
+      });
+
+      sourcesEl.replaceChildren(...sourceTags);
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const query = queryEl.value.trim();
@@ -383,7 +404,7 @@
       answerSection.classList.add('visible');
       examples.style.display = 'none';
       accumulatedAnswer = '';
-      sourcesEl.innerHTML = '';
+      sourcesEl.replaceChildren();
       submitBtn.disabled = true;
       submitBtn.textContent = 'Поиск...';
 
@@ -457,18 +478,15 @@
       if (event === 'sources') {
         const sources = JSON.parse(data);
         // Deduplicate sources for cleaner display
-        const unique = [...new Set(sources.map(s => s.source))];
-        sourcesEl.innerHTML = unique
-          .map(s => `<span class="source-tag">${s}</span>`)
-          .join('');
+        renderSources(sources);
         } else if (event === 'token') {
           const text = data.replace(/\\n/g, '\n');
           if (!firstTokenReceived) {
-            answerTextEl.innerHTML = '';
+            answerTextEl.replaceChildren();
             firstTokenReceived = true;
           }
           accumulatedAnswer += text;
-          answerTextEl.innerHTML = marked.parse(accumulatedAnswer);
+          answerTextEl.innerHTML = renderMarkdown(accumulatedAnswer);
         }
       // 'done' event we just ignore — the finally block handles cleanup
     }
