@@ -131,7 +131,7 @@ docker compose exec db psql -U postgres -d medical_rag -c \
   "SELECT source, COUNT(*) FROM chunks GROUP BY source ORDER BY source;"
 ```
 
-Should show 15 drugs with chunk counts.
+Should show 30 drugs with chunk counts.
 
 ## Stage 7: Firewall
 
