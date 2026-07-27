@@ -420,7 +420,12 @@
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+          let detail = `HTTP ${response.status}`;
+          try {
+            const body = await response.json();
+            if (typeof body.detail === 'string') detail = body.detail;
+          } catch { /* no JSON body — keep the status */ }
+          throw new Error(detail);
         }
 
         const reader = response.body.getReader();

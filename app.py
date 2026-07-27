@@ -1,10 +1,12 @@
 import os
 import json
+import time
 import psycopg2
 from openai import OpenAI
 from dotenv import load_dotenv
-from pydantic import BaseModel
-from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from collections import defaultdict, deque
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from sentence_transformers import SentenceTransformer, CrossEncoder
 
@@ -45,8 +47,17 @@ system_prompt = (
 
 app = FastAPI(title="Medical RAG")
 
+PER_IP_LIMIT = 2
+PER_IP_WINDOW = 3600        # seconds -> one hour
+
+GLOBAL_LIMIT = 400
+GLOBAL_WINDOW = 86400       # seconds -> one day
+
+ip_hits = defaultdict(deque)
+global_hits = deque()
+
 class Question(BaseModel):
-    query: str
+    query: str = Field(max_length=500)
     k: int = 10
     rerank: bool = False
 
@@ -55,6 +66,36 @@ class Answer(BaseModel):
     sources: list[dict]
     chunks: list[dict] 
 
+def client_ip(request: Request):
+    """Real visitor IP, accounting for the reverse proxy in front of us."""
+    forwarded = request.headers.get("X-Forwarded-For")
+
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+
+    return request.client.host if request.client else "unknown"
+
+def rate_limit(request: Request):
+    """Rejects a request if the per-IP or global limit is exceeded."""
+    now = time.time()
+    ip = client_ip(request)
+
+    hits = ip_hits[ip]
+
+    while hits and now - hits[0] > PER_IP_WINDOW:
+        hits.popleft()
+
+    while global_hits and now - global_hits[0] > GLOBAL_WINDOW:
+        global_hits.popleft()
+
+    if len(hits) >= PER_IP_LIMIT:
+        raise HTTPException(429, "Слишком много запросов. Попробуйте через час.")
+
+    if len(global_hits) >= GLOBAL_LIMIT:
+        raise HTTPException(429, "Демо временно недоступно: исчерпан дневной лимит запросов.")
+
+    hits.append(now)
+    global_hits.append(now)
 
 def get_rerank_model():
     """Lazy-load the reranker model only if needed."""
@@ -164,7 +205,7 @@ def search(query: str, k: int = 10):
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post("/ask", response_model=Answer)
-def ask(question: Question):
+def ask(question: Question, _: None = Depends(rate_limit)):
     try:
         # Bi-encoder retrieval with optional reranking step
         candidates = retrieve(question.query, k=50 if question.rerank else question.k)
@@ -196,7 +237,7 @@ def ask(question: Question):
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post("/ask/stream")
-def ask_stream(question: Question):
+def ask_stream(question: Question, _: None = Depends(rate_limit)):
     try:
         candidates = retrieve(question.query, k=50 if question.rerank else question.k)
 
