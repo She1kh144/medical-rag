@@ -47,7 +47,7 @@ system_prompt = (
 
 app = FastAPI(title="Medical RAG")
 
-PER_IP_LIMIT = 2
+PER_IP_LIMIT = 20
 PER_IP_WINDOW = 3600        # seconds -> one hour
 
 GLOBAL_LIMIT = 400
