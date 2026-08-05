@@ -2,6 +2,8 @@
 
 A retrieval-augmented question-answering system over Russian-language drug instructions, with strict source citation and no-medical-advice guardrails.
 
+![Medical RAG streaming answer demo](docs/demo.gif)
+
 ## What it does
 
 The user asks a question in Russian about a medication. The system retrieves the most semantically relevant chunks from a corpus of drug instructions, then generates an answer grounded strictly in those chunks, with the source cited and a mandatory disclaimer attached. When the retrieved context does not contain the answer, the system reports that honestly instead of hallucinating.
@@ -137,7 +139,7 @@ Judge results on the production system: 97% correctness, 97% faithfulness, 96% r
 
 - **Inferential leaps from context.** The system sometimes states facts that follow inferentially from the retrieved context rather than being directly stated in it. Stricter grounding would re-introduce the over-refusal pattern. Current generation prompt accepts this tradeoff in favor of usefulness.
 
-- **General-purpose generation model.** `deepseek-chat` is not medically tuned. Real medical use would require a domain-tuned model and clinical review.
+- **General-purpose generation model.** `deepseek-v4-flash` is not medically tuned. Real medical use would require a domain-tuned model and clinical review.
 
 - **Retrieval is based on textual similarity.** Queries phrased in terms not used by the source document (e.g., asking by age when the source dosing is by weight) may fail to retrieve relevant chunks.
 
