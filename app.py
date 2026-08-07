@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from collections import defaultdict, deque
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from sentence_transformers import SentenceTransformer, CrossEncoder
 
 load_dotenv()
@@ -46,6 +47,8 @@ system_prompt = (
 )
 
 app = FastAPI(title="Medical RAG")
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 PER_IP_LIMIT = 20
 PER_IP_WINDOW = 3600        # seconds -> one hour
